@@ -1,9 +1,11 @@
 from datetime import date
 import json
+import os
 from pathlib import Path
 import random
 
 import streamlit as st
+from tmdb import enrich_movie
 
 THEME_CSS = r"""
 <style>
@@ -199,6 +201,11 @@ def choose_recommendation(category, filters):
     return random.choice(recommendations) if recommendations else None
 
 
+@st.cache_data(ttl=86400, show_spinner=False)
+def cached_movie_enrichment(title, year, access_token):
+    return enrich_movie(title, year, access_token)
+
+
 def filter_widget_key(category, name):
     return f"{category}_{name}_{st.session_state.filter_version}"
 
@@ -253,13 +260,31 @@ def show_filters(category):
     return {"genre": genre, "player_support": player_support}
 
 
-def show_recommendation(category, recommendation):
+def show_recommendation(category, recommendation, enrichment=None):
     if category == "movie":
         st.subheader(recommendation["title"])
         st.caption(
             f'{recommendation["year"]} · {recommendation["genre"]} · '
             f'Scare level {recommendation["scare_level"]}/5'
         )
+        if enrichment:
+            poster_col, details_col = st.columns([1, 3])
+            with poster_col:
+                if enrichment.get("poster_url"):
+                    st.image(enrichment["poster_url"], use_container_width=True)
+            with details_col:
+                if enrichment.get("overview"):
+                    st.write(enrichment["overview"])
+                metadata = []
+                if enrichment.get("release_date"):
+                    metadata.append(f'Released {enrichment["release_date"]}')
+                if enrichment.get("runtime"):
+                    metadata.append(f'{enrichment["runtime"]} min')
+                if enrichment.get("rating"):
+                    metadata.append(f'TMDB {enrichment["rating"]:.1f}/10')
+                if metadata:
+                    st.caption(" · ".join(metadata))
+            st.caption("Movie details provided by TMDB. Not endorsed or certified by TMDB.")
     elif category == "episode":
         st.subheader(f'{recommendation["show"]}: {recommendation["episode_title"]}')
         st.caption(
@@ -307,8 +332,19 @@ if st.session_state.category is not None:
     if st.session_state.recommendation is None:
         st.info("No recommendations match those filters. Try another combination.")
     else:
+        enrichment = None
+        if st.session_state.category == "movie":
+            enrichment = cached_movie_enrichment(
+                st.session_state.recommendation["title"],
+                st.session_state.recommendation["year"],
+                os.getenv("TMDB_READ_ACCESS_TOKEN", ""),
+            )
         with st.container(border=True):
-            show_recommendation(st.session_state.category, st.session_state.recommendation)
+            show_recommendation(
+                st.session_state.category,
+                st.session_state.recommendation,
+                enrichment,
+            )
 
     roll_col, change_col = st.columns(2)
     with roll_col:
