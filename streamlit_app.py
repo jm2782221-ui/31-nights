@@ -12,6 +12,7 @@ CATEGORIES = {
     "episode": ("📺 HALLOWEEN EPISODE", "tv_episodes.json"),
     "game": ("🎮 SPOOKY GAME", "games.json"),
 }
+ANY_FILTER = "Any"
 
 
 @st.cache_data
@@ -29,9 +30,99 @@ def days_until_halloween():
     return (halloween - today).days
 
 
-def choose_recommendation(category):
+def recommendations_for(category, filters):
     _, filename = CATEGORIES[category]
-    return random.choice(load_recommendations(filename))
+    recommendations = load_recommendations(filename)
+
+    if category == "movie":
+        if filters["genre"] != ANY_FILTER:
+            recommendations = [
+                item for item in recommendations if item["genre"] == filters["genre"]
+            ]
+        if filters["scare_level"] != ANY_FILTER:
+            recommendations = [
+                item
+                for item in recommendations
+                if item["scare_level"] == filters["scare_level"]
+            ]
+    elif category == "episode":
+        if filters["show"] != ANY_FILTER:
+            recommendations = [
+                item for item in recommendations if item["show"] == filters["show"]
+            ]
+    else:
+        if filters["genre"] != ANY_FILTER:
+            recommendations = [
+                item for item in recommendations if item["genre"] == filters["genre"]
+            ]
+        if filters["player_support"] != ANY_FILTER:
+            player_support = filters["player_support"].lower()
+            recommendations = [
+                item
+                for item in recommendations
+                if item["player_support"] == player_support
+            ]
+
+    return recommendations
+
+
+def choose_recommendation(category, filters):
+    recommendations = recommendations_for(category, filters)
+    return random.choice(recommendations) if recommendations else None
+
+
+def filter_widget_key(category, name):
+    return f"{category}_{name}_{st.session_state.filter_version}"
+
+
+def show_filters(category):
+    if category == "movie":
+        genre_options = sorted(
+            {item["genre"] for item in load_recommendations(CATEGORIES[category][1])}
+        )
+        genre = st.selectbox(
+            "Genre",
+            [ANY_FILTER, *genre_options],
+            key=filter_widget_key(category, "genre"),
+        )
+        scare_levels = sorted(
+            {
+                str(item["scare_level"])
+                for item in load_recommendations(CATEGORIES[category][1])
+            }
+        )
+        scare_level = st.selectbox(
+            "Scare level",
+            [ANY_FILTER, *scare_levels],
+            key=filter_widget_key(category, "scare_level"),
+        )
+        return {"genre": genre, "scare_level": int(scare_level) if scare_level != ANY_FILTER else ANY_FILTER}
+
+    if category == "episode":
+        shows = sorted(
+            {item["show"] for item in load_recommendations(CATEGORIES[category][1])}
+        )
+        return {
+            "show": st.selectbox(
+                "Show",
+                [ANY_FILTER, *shows],
+                key=filter_widget_key(category, "show"),
+            )
+        }
+
+    games = load_recommendations(CATEGORIES[category][1])
+    genres = sorted({item["genre"] for item in games})
+    genre = st.selectbox(
+        "Genre",
+        [ANY_FILTER, *genres],
+        key=filter_widget_key(category, "genre"),
+    )
+    player_support = st.selectbox(
+        "Player support",
+        [ANY_FILTER, "Single-player", "Multiplayer", "Both"],
+        key=filter_widget_key(category, "player_support"),
+    )
+    return {"genre": genre, "player_support": player_support}
 
 
 def show_recommendation(category, recommendation):
@@ -63,26 +154,48 @@ if "category" not in st.session_state:
     st.session_state.category = None
 if "recommendation" not in st.session_state:
     st.session_state.recommendation = None
+if "filters" not in st.session_state:
+    st.session_state.filters = {}
+if "filter_version" not in st.session_state:
+    st.session_state.filter_version = 0
 
 col1, col2, col3 = st.columns(3)
 for column, category in zip((col1, col2, col3), CATEGORIES):
     with column:
         if st.button(CATEGORIES[category][0], use_container_width=True):
             st.session_state.category = category
-            st.session_state.recommendation = choose_recommendation(category)
+            st.session_state.recommendation = None
+            st.session_state.filters = {}
+            st.session_state.filter_version += 1
 
-if st.session_state.recommendation is not None:
-    show_recommendation(st.session_state.category, st.session_state.recommendation)
+if st.session_state.category is not None:
+    st.session_state.filters = show_filters(st.session_state.category)
+    matches = recommendations_for(
+        st.session_state.category, st.session_state.filters
+    )
+    if st.session_state.recommendation not in matches:
+        st.session_state.recommendation = random.choice(matches) if matches else None
+
+    if st.session_state.recommendation is None:
+        st.info("No recommendations match those filters. Try another combination.")
+    else:
+        show_recommendation(st.session_state.category, st.session_state.recommendation)
 
     roll_col, change_col = st.columns(2)
     with roll_col:
-        if st.button("🔄 Roll Again", use_container_width=True):
+        if st.button(
+            "🔄 Roll Again",
+            disabled=not matches,
+            use_container_width=True,
+        ):
             st.session_state.recommendation = choose_recommendation(
-                st.session_state.category
+                st.session_state.category, st.session_state.filters
             )
             st.rerun()
     with change_col:
         if st.button("↩️ Choose Something Else", use_container_width=True):
             st.session_state.category = None
             st.session_state.recommendation = None
+            st.session_state.filters = {}
+            st.session_state.filter_version += 1
             st.rerun()
