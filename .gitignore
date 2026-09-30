@@ -1,3 +1,5 @@
 __pycache__/
 *.py[cod]
 .env
+watched_movies.json
+.watched_movies.*.tmp

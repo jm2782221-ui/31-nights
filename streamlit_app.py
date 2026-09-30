@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import random
+import tempfile
 
 import streamlit as st
 from tmdb import enrich_movie
@@ -144,6 +145,52 @@ CATEGORIES = {
 }
 ANY_FILTER = "Any"
 
+WATCHED_MOVIES_PATH = Path(__file__).resolve().parent / "watched_movies.json"
+
+
+def movie_history_key(movie):
+    normalized_title = " ".join(movie["title"].split()).casefold()
+    return f"{normalized_title}::{int(movie['year'])}"
+
+
+def load_watched_movies():
+    try:
+        history = json.loads(WATCHED_MOVIES_PATH.read_text(encoding="utf-8"))
+        entries = history.get("watched", []) if isinstance(history, dict) else []
+        return {
+            movie_history_key(entry)
+            for entry in entries
+            if isinstance(entry, dict)
+            and isinstance(entry.get("title"), str)
+            and str(entry.get("year", "")).isdigit()
+        }
+    except (OSError, ValueError, TypeError):
+        return set()
+
+
+def save_watched_movies(watched_keys):
+    catalog = load_recommendations(CATEGORIES["movie"][1])
+    movies_by_key = {movie_history_key(movie): movie for movie in catalog}
+    entries = [
+        {"title": movies_by_key[key]["title"], "year": movies_by_key[key]["year"]}
+        for key in sorted(watched_keys)
+        if key in movies_by_key
+    ]
+    payload = json.dumps({"version": 1, "watched": entries}, ensure_ascii=False, indent=2)
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=WATCHED_MOVIES_PATH.parent,
+            prefix=".watched_movies.", suffix=".tmp", delete=False,
+        ) as temporary_file:
+            temporary_file.write(payload)
+            temporary_path = Path(temporary_file.name)
+        os.replace(temporary_path, WATCHED_MOVIES_PATH)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+
+
 
 @st.cache_data
 def load_recommendations(filename):
@@ -160,7 +207,26 @@ def days_until_halloween():
     return (halloween - today).days
 
 
-def recommendations_for(category, filters):
+def is_recommendation_available(recommendation, on_date=None):
+    available_date = recommendation.get("available_date")
+    if not available_date:
+        return True
+    try:
+        available_on = date.fromisoformat(available_date)
+    except (TypeError, ValueError):
+        return False
+    return available_on <= (on_date or date.today())
+
+
+def coming_soon_episodes(on_date=None):
+    episodes = load_recommendations(CATEGORIES["episode"][1])
+    return sorted(
+        [episode for episode in episodes if not is_recommendation_available(episode, on_date)],
+        key=lambda episode: episode.get("available_date", ""),
+    )
+
+
+def recommendations_for(category, filters, on_date=None):
     _, filename = CATEGORIES[category]
     recommendations = load_recommendations(filename)
 
@@ -176,6 +242,10 @@ def recommendations_for(category, filters):
                 if item["scare_level"] == filters["scare_level"]
             ]
     elif category == "episode":
+        recommendations = [
+            episode for episode in recommendations
+            if is_recommendation_available(episode, on_date)
+        ]
         if filters["show"] != ANY_FILTER:
             recommendations = [
                 item for item in recommendations if item["show"] == filters["show"]
@@ -267,17 +337,21 @@ def show_recommendation(category, recommendation, enrichment=None):
             f'{recommendation["year"]} · {recommendation["genre"]} · '
             f'Scare level {recommendation["scare_level"]}/5'
         )
+
         if enrichment:
             poster_col, details_col = st.columns([1, 3])
             with poster_col:
                 if enrichment.get("poster_url"):
                     st.image(enrichment["poster_url"], use_container_width=True)
+
             with details_col:
                 if enrichment.get("overview"):
                     st.write(enrichment["overview"])
+
                 metadata = []
                 if enrichment.get("release_date"):
                     metadata.append(f'Released {enrichment["release_date"]}')
+
                 runtime = enrichment.get("runtime")
                 if isinstance(runtime, int) and not isinstance(runtime, bool) and runtime > 0:
                     hours, minutes = divmod(runtime, 60)
@@ -287,6 +361,7 @@ def show_recommendation(category, recommendation, enrichment=None):
                 rating = enrichment.get("rating")
                 if isinstance(rating, (int, float)) and not isinstance(rating, bool):
                     metadata.append(f"TMDB Rating: {rating:.1f}/10")
+
                 if metadata:
                     st.caption(" · ".join(metadata))
 
@@ -308,20 +383,30 @@ def show_recommendation(category, recommendation, enrichment=None):
                     else:
                         st.caption("No U.S. streaming providers are listed for this movie.")
                     st.caption("Availability data by JustWatch via TMDB; listings can change.")
+
         st.caption("Movie details provided by TMDB. Not endorsed or certified by TMDB.")
     elif category == "episode":
-        st.subheader(f'{recommendation["show"]}: {recommendation["episode_title"]}')
-        st.caption(
-            f'Season {recommendation["season"]}, '
-            f'Episode {recommendation["episode_number"]}'
+        st.subheader(
+            f'{recommendation["show"]}: {recommendation["episode_title"]}'
         )
+        if recommendation.get("season") is None or recommendation.get("episode_number") is None:
+            special_year = recommendation.get("special_year")
+            special_label = f"{special_year} Halloween special" if special_year else "Halloween special"
+            available_date = recommendation.get("available_date")
+            if available_date:
+                special_label += f" · Available {available_date}"
+            st.caption(special_label)
+        else:
+            st.caption(
+                f'Season {recommendation["season"]} · '
+                f'Episode {recommendation["episode_number"]}'
+            )
     else:
         st.subheader(recommendation["title"])
         st.caption(
             f'{recommendation["genre"]} · '
-            f'{recommendation["player_support"].replace("-", " ").title()}'
+            f'{recommendation["player_support"].replace("_", " ").title()}'
         )
-
 
 st.title("31 Nights 🎃")
 st.subheader(f"{days_until_halloween()} days until Halloween!")
@@ -345,46 +430,101 @@ for column, category in zip((col1, col2, col3), CATEGORIES):
             st.session_state.filters = {}
             st.session_state.filter_version += 1
 
+coming_soon = coming_soon_episodes()
+if coming_soon:
+    st.subheader("Coming Soon")
+    for episode in coming_soon:
+        st.write(
+            f"{episode['show']}: {episode['episode_title']} · "
+            f"Available {episode.get('available_date', 'Date not set')}"
+        )
+
+
 if st.session_state.category is not None:
-    st.session_state.filters = show_filters(st.session_state.category)
-    matches = recommendations_for(
-        st.session_state.category, st.session_state.filters
+    category = st.session_state.category
+    filters = show_filters(category)
+    st.session_state.filters = filters
+    all_matches = recommendations_for(category, filters)
+    matches = all_matches
+    watched_keys = set()
+    include_watched = False
+
+    if category == "movie":
+        watched_keys = load_watched_movies()
+        include_watched = st.checkbox(
+            "Include watched movies in future rolls",
+            key=filter_widget_key(category, "include_watched"),
+        )
+        with st.expander(f"Watched movies ({len(watched_keys)})"):
+            watched_titles = sorted(
+                (
+                    movie for movie in load_recommendations(CATEGORIES["movie"][1])
+                    if movie_history_key(movie) in watched_keys
+                ),
+                key=lambda movie: (movie["title"].casefold(), movie["year"]),
+            )
+            if watched_titles:
+                for movie in watched_titles:
+                    st.write(f"{movie['title']} ({movie['year']})")
+                if st.button("Clear watched history", key="clear_watched_history"):
+                    save_watched_movies(set())
+                    st.session_state.marked_movie_key = None
+                    st.rerun()
+            else:
+                st.caption("No movies marked as watched yet.")
+        if not include_watched:
+            matches = [movie for movie in all_matches if movie_history_key(movie) not in watched_keys]
+
+    current = st.session_state.recommendation
+    preserve_marked_movie = (
+        category == "movie" and current is not None
+        and movie_history_key(current) == st.session_state.get("marked_movie_key")
+        and current in all_matches
     )
-    if st.session_state.recommendation not in matches:
+    if not preserve_marked_movie and current not in matches:
         st.session_state.recommendation = random.choice(matches) if matches else None
 
-    if st.session_state.recommendation is None:
-        st.info("No recommendations match those filters. Try another combination.")
+    recommendation = st.session_state.recommendation
+    all_matching_movies_watched = (
+        category == "movie" and bool(all_matches) and not matches and not include_watched
+    )
+    if all_matching_movies_watched:
+        st.info(
+            "Every movie matching these filters is already marked as watched. "
+            "Include watched movies or clear watched history to roll again."
+        )
+    if recommendation is None:
+        if not all_matching_movies_watched:
+            st.info("No recommendations match those filters. Try another combination.")
     else:
         enrichment = None
-        if st.session_state.category == "movie":
+        if category == "movie":
             enrichment = cached_movie_enrichment(
-                st.session_state.recommendation["title"],
-                st.session_state.recommendation["year"],
+                recommendation["title"], recommendation["year"],
                 os.getenv("TMDB_READ_ACCESS_TOKEN", ""),
             )
         with st.container(border=True):
-            show_recommendation(
-                st.session_state.category,
-                st.session_state.recommendation,
-                enrichment,
-            )
+            show_recommendation(category, recommendation, enrichment)
+        if category == "movie":
+            current_key = movie_history_key(recommendation)
+            if current_key in watched_keys:
+                st.caption("Already watched · future movie rolls skip this title by default.")
+            elif st.button("Mark as Watched", key=f"mark_watched_{st.session_state.filter_version}"):
+                watched_keys.add(current_key)
+                save_watched_movies(watched_keys)
+                st.session_state.marked_movie_key = current_key
+                st.rerun()
 
     roll_col, change_col = st.columns(2)
     with roll_col:
-        if st.button(
-            "🔄 Roll Again",
-            disabled=not matches,
-            use_container_width=True,
-        ):
-            st.session_state.recommendation = choose_recommendation(
-                st.session_state.category, st.session_state.filters
-            )
+        if st.button("🎲 Roll Again", disabled=not matches, use_container_width=True):
+            st.session_state.recommendation = random.choice(matches)
+            st.session_state.marked_movie_key = None
             st.rerun()
     with change_col:
-        if st.button("↩️ Choose Something Else", use_container_width=True):
+        if st.button("🔄 Choose Something Else", use_container_width=True):
             st.session_state.category = None
             st.session_state.recommendation = None
             st.session_state.filters = {}
             st.session_state.filter_version += 1
-            st.rerun()
+            st.session_state.marked_movie_key = None

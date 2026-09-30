@@ -28,5 +28,515 @@
     "year": 1984,
     "genre": "Supernatural slasher",
     "scare_level": 4
+  },
+  {
+    "title": "Psycho",
+    "year": 1960,
+    "genre": "Psychological thriller",
+    "scare_level": 4
+  },
+  {
+    "title": "Night of the Living Dead",
+    "year": 1968,
+    "genre": "Classic zombie horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Exorcist",
+    "year": 1973,
+    "genre": "Supernatural horror",
+    "scare_level": 5
+  },
+  {
+    "title": "The Texas Chain Saw Massacre",
+    "year": 1974,
+    "genre": "Slasher",
+    "scare_level": 5
+  },
+  {
+    "title": "Black Christmas",
+    "year": 1974,
+    "genre": "Slasher",
+    "scare_level": 4
+  },
+  {
+    "title": "Jaws",
+    "year": 1975,
+    "genre": "Creature feature",
+    "scare_level": 3
+  },
+  {
+    "title": "Carrie",
+    "year": 1976,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Dawn of the Dead",
+    "year": 1978,
+    "genre": "Zombie horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Alien",
+    "year": 1979,
+    "genre": "Sci-fi horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Friday the 13th",
+    "year": 1980,
+    "genre": "Slasher",
+    "scare_level": 3
+  },
+  {
+    "title": "An American Werewolf in London",
+    "year": 1981,
+    "genre": "Horror-comedy",
+    "scare_level": 3
+  },
+  {
+    "title": "The Evil Dead",
+    "year": 1981,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Poltergeist",
+    "year": 1982,
+    "genre": "Supernatural horror",
+    "scare_level": 3
+  },
+  {
+    "title": "The Thing",
+    "year": 1982,
+    "genre": "Creature feature",
+    "scare_level": 5
+  },
+  {
+    "title": "Gremlins",
+    "year": 1984,
+    "genre": "Horror-comedy",
+    "scare_level": 2
+  },
+  {
+    "title": "The Return of the Living Dead",
+    "year": 1985,
+    "genre": "Zombie horror-comedy",
+    "scare_level": 3
+  },
+  {
+    "title": "The Fly",
+    "year": 1986,
+    "genre": "Body horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Lost Boys",
+    "year": 1987,
+    "genre": "Vampire horror",
+    "scare_level": 3
+  },
+  {
+    "title": "Evil Dead II",
+    "year": 1987,
+    "genre": "Horror-comedy",
+    "scare_level": 3
+  },
+  {
+    "title": "The Monster Squad",
+    "year": 1987,
+    "genre": "Family horror-comedy",
+    "scare_level": 2
+  },
+  {
+    "title": "Child's Play",
+    "year": 1988,
+    "genre": "Supernatural slasher",
+    "scare_level": 3
+  },
+  {
+    "title": "Beetlejuice",
+    "year": 1988,
+    "genre": "Family horror-comedy",
+    "scare_level": 1
+  },
+  {
+    "title": "Misery",
+    "year": 1990,
+    "genre": "Psychological thriller",
+    "scare_level": 4
+  },
+  {
+    "title": "Tremors",
+    "year": 1990,
+    "genre": "Creature feature",
+    "scare_level": 2
+  },
+  {
+    "title": "The Silence of the Lambs",
+    "year": 1991,
+    "genre": "Psychological thriller",
+    "scare_level": 4
+  },
+  {
+    "title": "The Addams Family",
+    "year": 1991,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "Bram Stoker's Dracula",
+    "year": 1992,
+    "genre": "Gothic horror",
+    "scare_level": 3
+  },
+  {
+    "title": "Hocus Pocus",
+    "year": 1993,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "The Nightmare Before Christmas",
+    "year": 1993,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "Addams Family Values",
+    "year": 1993,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "Casper",
+    "year": 1995,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "The Craft",
+    "year": 1996,
+    "genre": "Supernatural horror",
+    "scare_level": 3
+  },
+  {
+    "title": "I Know What You Did Last Summer",
+    "year": 1997,
+    "genre": "Slasher",
+    "scare_level": 3
+  },
+  {
+    "title": "Halloweentown",
+    "year": 1998,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "The Blair Witch Project",
+    "year": 1999,
+    "genre": "Found footage",
+    "scare_level": 4
+  },
+  {
+    "title": "Sleepy Hollow",
+    "year": 1999,
+    "genre": "Gothic horror",
+    "scare_level": 3
+  },
+  {
+    "title": "The Sixth Sense",
+    "year": 1999,
+    "genre": "Supernatural mystery",
+    "scare_level": 3
+  },
+  {
+    "title": "The Mummy",
+    "year": 1999,
+    "genre": "Adventure horror",
+    "scare_level": 2
+  },
+  {
+    "title": "Final Destination",
+    "year": 2000,
+    "genre": "Supernatural thriller",
+    "scare_level": 4
+  },
+  {
+    "title": "The Others",
+    "year": 2001,
+    "genre": "Supernatural horror",
+    "scare_level": 3
+  },
+  {
+    "title": "The Ring",
+    "year": 2002,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "28 Days Later",
+    "year": 2002,
+    "genre": "Zombie horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Shaun of the Dead",
+    "year": 2004,
+    "genre": "Horror-comedy",
+    "scare_level": 2
+  },
+  {
+    "title": "Saw",
+    "year": 2004,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Descent",
+    "year": 2005,
+    "genre": "Creature horror",
+    "scare_level": 5
+  },
+  {
+    "title": "Monster House",
+    "year": 2006,
+    "genre": "Family horror",
+    "scare_level": 2
+  },
+  {
+    "title": "Pan's Labyrinth",
+    "year": 2006,
+    "genre": "Dark fantasy",
+    "scare_level": 3
+  },
+  {
+    "title": "[REC]",
+    "year": 2007,
+    "genre": "Found footage",
+    "scare_level": 4
+  },
+  {
+    "title": "Paranormal Activity",
+    "year": 2007,
+    "genre": "Found footage",
+    "scare_level": 3
+  },
+  {
+    "title": "Trick 'r Treat",
+    "year": 2007,
+    "genre": "Horror anthology",
+    "scare_level": 4
+  },
+  {
+    "title": "Cloverfield",
+    "year": 2008,
+    "genre": "Found footage",
+    "scare_level": 3
+  },
+  {
+    "title": "Coraline",
+    "year": 2009,
+    "genre": "Family dark fantasy",
+    "scare_level": 2
+  },
+  {
+    "title": "Zombieland",
+    "year": 2009,
+    "genre": "Zombie horror-comedy",
+    "scare_level": 2
+  },
+  {
+    "title": "Insidious",
+    "year": 2010,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Cabin in the Woods",
+    "year": 2011,
+    "genre": "Horror-comedy",
+    "scare_level": 3
+  },
+  {
+    "title": "ParaNorman",
+    "year": 2012,
+    "genre": "Family horror",
+    "scare_level": 1
+  },
+  {
+    "title": "Frankenweenie",
+    "year": 2012,
+    "genre": "Family horror",
+    "scare_level": 2
+  },
+  {
+    "title": "The Babadook",
+    "year": 2014,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "It Follows",
+    "year": 2014,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Witch",
+    "year": 2015,
+    "genre": "Folk horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Visit",
+    "year": 2015,
+    "genre": "Found footage",
+    "scare_level": 3
+  },
+  {
+    "title": "Train to Busan",
+    "year": 2016,
+    "genre": "Zombie horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Autopsy of Jane Doe",
+    "year": 2016,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Get Out",
+    "year": 2017,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "It",
+    "year": 2017,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "A Quiet Place",
+    "year": 2018,
+    "genre": "Creature feature",
+    "scare_level": 3
+  },
+  {
+    "title": "Hereditary",
+    "year": 2018,
+    "genre": "Psychological horror",
+    "scare_level": 5
+  },
+  {
+    "title": "Us",
+    "year": 2019,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Midsommar",
+    "year": 2019,
+    "genre": "Folk horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Ready or Not",
+    "year": 2019,
+    "genre": "Horror-comedy",
+    "scare_level": 3
+  },
+  {
+    "title": "Scary Stories to Tell in the Dark",
+    "year": 2019,
+    "genre": "Family horror",
+    "scare_level": 2
+  },
+  {
+    "title": "The Lighthouse",
+    "year": 2019,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Invisible Man",
+    "year": 2020,
+    "genre": "Psychological thriller",
+    "scare_level": 3
+  },
+  {
+    "title": "Host",
+    "year": 2020,
+    "genre": "Found footage",
+    "scare_level": 3
+  },
+  {
+    "title": "The Black Phone",
+    "year": 2021,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Nope",
+    "year": 2022,
+    "genre": "Sci-fi horror",
+    "scare_level": 3
+  },
+  {
+    "title": "Smile",
+    "year": 2022,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Barbarian",
+    "year": 2022,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Talk to Me",
+    "year": 2022,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "X",
+    "year": 2022,
+    "genre": "Slasher",
+    "scare_level": 4
+  },
+  {
+    "title": "The First Omen",
+    "year": 2024,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "Longlegs",
+    "year": 2024,
+    "genre": "Psychological horror",
+    "scare_level": 5
+  },
+  {
+    "title": "The Substance",
+    "year": 2024,
+    "genre": "Body horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Haunted Mansion",
+    "year": 2003,
+    "genre": "Family Halloween",
+    "scare_level": 1
+  },
+  {
+    "title": "Goosebumps",
+    "year": 2015,
+    "genre": "Family horror",
+    "scare_level": 1
   }
 ]

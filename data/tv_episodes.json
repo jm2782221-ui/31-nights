@@ -1,9 +1,237 @@
 [
   {
     "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror",
+    "season": 2,
+    "episode_number": 3
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror II",
+    "season": 3,
+    "episode_number": 7
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror III",
+    "season": 4,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror IV",
+    "season": 5,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
     "episode_title": "Treehouse of Horror V",
     "season": 6,
     "episode_number": 6
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror VI",
+    "season": 7,
+    "episode_number": 6
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror VII",
+    "season": 8,
+    "episode_number": 1
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror VIII",
+    "season": 9,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror IX",
+    "season": 10,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror X",
+    "season": 11,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XI",
+    "season": 12,
+    "episode_number": 1
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XII",
+    "season": 13,
+    "episode_number": 1
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XIII",
+    "season": 14,
+    "episode_number": 1
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XIV",
+    "season": 15,
+    "episode_number": 1
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XV",
+    "season": 16,
+    "episode_number": 1
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XVI",
+    "season": 17,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XVII",
+    "season": 18,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XVIII",
+    "season": 19,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XIX",
+    "season": 20,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XX",
+    "season": 21,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXI",
+    "season": 22,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXII",
+    "season": 23,
+    "episode_number": 3
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXIII",
+    "season": 24,
+    "episode_number": 2
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXIV",
+    "season": 25,
+    "episode_number": 2
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXV",
+    "season": 26,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXVI",
+    "season": 27,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXVII",
+    "season": 28,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXVIII",
+    "season": 29,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXIX",
+    "season": 30,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXX",
+    "season": 31,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXXI",
+    "season": 32,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXXII",
+    "season": 33,
+    "episode_number": 3
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXXIII",
+    "season": 34,
+    "episode_number": 6
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXXIV",
+    "season": 35,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXXV",
+    "season": 36,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror XXXVI",
+    "season": 37,
+    "episode_number": 3
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Halloween of Horror",
+    "season": 27,
+    "episode_number": 4
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror Presents: Not It",
+    "season": 34,
+    "episode_number": 5
+  },
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror Presents: Simpsons Wicked This Way Comes",
+    "season": 36,
+    "episode_number": 7
   },
   {
     "show": "Bob's Burgers",
@@ -12,15 +240,145 @@
     "episode_number": 2
   },
   {
+    "show": "Bob's Burgers",
+    "episode_title": "Fort Night",
+    "season": 4,
+    "episode_number": 2
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Tina and the Real Ghost",
+    "season": 5,
+    "episode_number": 2
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "The Hauntening",
+    "season": 6,
+    "episode_number": 3
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Teen-a Witch",
+    "season": 7,
+    "episode_number": 3
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "The Wolf of Wharf Street",
+    "season": 8,
+    "episode_number": 3
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Nightmare on Ocean Avenue Street",
+    "season": 9,
+    "episode_number": 4
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Pig Trouble in Little Tina",
+    "season": 10,
+    "episode_number": 4
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Heartbreak Hotel-oween",
+    "season": 11,
+    "episode_number": 4
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "The Pumpkinening",
+    "season": 12,
+    "episode_number": 3
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Apple Gore-chard! (But Not Gory)",
+    "season": 13,
+    "episode_number": 6
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "For Whom the Doll Toes",
+    "season": 15,
+    "episode_number": 4
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "The Twinnening",
+    "season": 16,
+    "episode_number": 3
+  },
+  {
     "show": "Family Guy",
     "episode_title": "Halloween on Spooner Street",
     "season": 9,
-    "episode_number": 5
+    "episode_number": 4
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "Quagmire's Quagmire",
+    "season": 12,
+    "episode_number": 3
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "Must Love Dogs",
+    "season": 20,
+    "episode_number": 3
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "Happy Holo-ween",
+    "season": 21,
+    "episode_number": 6
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "Peter, Peter, Pumpkin Cheater",
+    "season": null,
+    "episode_number": null,
+    "special_year": 2024
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "A Little Fright Music",
+    "season": null,
+    "episode_number": null,
+    "special_year": 2025
+  },
+  {
+    "show": "Community",
+    "episode_title": "Introduction to Statistics",
+    "season": 1,
+    "episode_number": 7
   },
   {
     "show": "Community",
     "episode_title": "Epidemiology",
+    "season": 2,
+    "episode_number": 6
+  },
+  {
+    "show": "Community",
+    "episode_title": "Horror Fiction in Seven Spooky Steps",
     "season": 3,
     "episode_number": 5
+  },
+  {
+    "show": "Community",
+    "episode_title": "Paranormal Parentage",
+    "season": 4,
+    "episode_number": 2
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "Happy Hell-o-ween",
+    "season": null,
+    "episode_number": null,
+    "special_year": 2026,
+    "available_date": "2026-10-05"
   }
 ]
