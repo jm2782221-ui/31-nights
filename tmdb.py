@@ -86,6 +86,57 @@ def _available_details(result):
     return details
 
 
+def _watch_provider_details(payload):
+    if not isinstance(payload, dict):
+        return None
+
+    regions = payload.get("results")
+    if not isinstance(regions, dict):
+        return None
+    us = regions.get("US")
+    if not isinstance(us, dict):
+        return {}
+
+    def provider_names(category):
+        entries = us.get(category)
+        if not isinstance(entries, list):
+            return []
+        names = []
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            name = entry.get("provider_name")
+            if isinstance(name, str):
+                name = name.strip()
+                if name and name not in names:
+                    names.append(name)
+        return names
+
+    details = {
+        "streaming": [],
+        "rent": provider_names("rent"),
+        "buy": provider_names("buy"),
+    }
+    for category in ("flatrate", "free", "ads"):
+        for name in provider_names(category):
+            if name not in details["streaming"]:
+                details["streaming"].append(name)
+
+    link = us.get("link")
+    if isinstance(link, str):
+        try:
+            parsed_link = urllib.parse.urlparse(link)
+        except ValueError:
+            parsed_link = None
+        if (
+            parsed_link is not None
+            and parsed_link.scheme == "https"
+            and parsed_link.netloc.lower() == "www.themoviedb.org"
+        ):
+            details["link"] = link
+    return details
+
+
 def enrich_movie(title, year, access_token=None):
     """Return validated TMDB metadata, or None when enrichment is unavailable."""
     access_token = access_token or os.getenv("TMDB_READ_ACCESS_TOKEN")
@@ -136,10 +187,29 @@ def enrich_movie(title, year, access_token=None):
             ValueError,
             TypeError,
         ):
+
             extra = None
         if isinstance(extra, dict) and extra.get("id") == movie_id:
             runtime = _available_details(extra).get("runtime")
             if runtime is not None:
                 movie_details["runtime"] = runtime
+
+    if type(movie_id) is int and movie_id > 0:
+        try:
+            provider_response = _request_json(
+                f"/movie/{movie_id}/watch/providers", {}, access_token
+            )
+        except (
+            urllib.error.URLError,
+            http.client.HTTPException,
+            TimeoutError,
+            OSError,
+            ValueError,
+            TypeError,
+        ):
+            provider_response = None
+        watch_providers = _watch_provider_details(provider_response)
+        if watch_providers is not None:
+            movie_details["watch_providers"] = watch_providers
 
     return movie_details

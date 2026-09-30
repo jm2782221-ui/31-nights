@@ -201,7 +201,7 @@ def choose_recommendation(category, filters):
     return random.choice(recommendations) if recommendations else None
 
 
-@st.cache_data(ttl=86400, show_spinner=False)
+@st.cache_data(ttl=21600, show_spinner=False)
 def cached_movie_enrichment(title, year, access_token):
     return enrich_movie(title, year, access_token)
 
@@ -278,13 +278,37 @@ def show_recommendation(category, recommendation, enrichment=None):
                 metadata = []
                 if enrichment.get("release_date"):
                     metadata.append(f'Released {enrichment["release_date"]}')
-                if enrichment.get("runtime"):
-                    metadata.append(f'{enrichment["runtime"]} min')
-                if enrichment.get("rating"):
-                    metadata.append(f'TMDB {enrichment["rating"]:.1f}/10')
+                runtime = enrichment.get("runtime")
+                if isinstance(runtime, int) and not isinstance(runtime, bool) and runtime > 0:
+                    hours, minutes = divmod(runtime, 60)
+                    runtime_label = f"{hours}h {minutes}m" if hours else f"{minutes}m"
+                    metadata.append(f"Runtime: {runtime_label}")
+
+                rating = enrichment.get("rating")
+                if isinstance(rating, (int, float)) and not isinstance(rating, bool):
+                    metadata.append(f"TMDB Rating: {rating:.1f}/10")
                 if metadata:
                     st.caption(" · ".join(metadata))
-            st.caption("Movie details provided by TMDB. Not endorsed or certified by TMDB.")
+
+                providers = enrichment.get("watch_providers")
+                if isinstance(providers, dict):
+                    raw_streaming = providers.get("streaming")
+                    streaming = []
+                    if isinstance(raw_streaming, list):
+                        streaming = [
+                            name.strip()
+                            for name in raw_streaming
+                            if isinstance(name, str) and name.strip()
+                        ]
+
+                    if streaming:
+                        st.caption("Available on in the U.S.")
+                        for name in streaming:
+                            st.text(f"- {name}")
+                    else:
+                        st.caption("No U.S. streaming providers are listed for this movie.")
+                    st.caption("Availability data by JustWatch via TMDB; listings can change.")
+        st.caption("Movie details provided by TMDB. Not endorsed or certified by TMDB.")
     elif category == "episode":
         st.subheader(f'{recommendation["show"]}: {recommendation["episode_title"]}')
         st.caption(
