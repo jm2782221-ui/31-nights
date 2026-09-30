@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Scream",
+    "year": 1996,
+    "genre": "Slasher",
+    "scare_level": 3
+  },
+  {
+    "title": "Halloween",
+    "year": 1978,
+    "genre": "Slasher",
+    "scare_level": 4
+  },
+  {
+    "title": "The Conjuring",
+    "year": 2013,
+    "genre": "Supernatural horror",
+    "scare_level": 4
+  },
+  {
+    "title": "The Shining",
+    "year": 1980,
+    "genre": "Psychological horror",
+    "scare_level": 4
+  },
+  {
+    "title": "A Nightmare on Elm Street",
+    "year": 1984,
+    "genre": "Supernatural slasher",
+    "scare_level": 4
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "title": "Phasmophobia",
+    "genre": "Psychological horror",
+    "player_support": "both"
+  },
+  {
+    "title": "Resident Evil 4",
+    "genre": "Survival horror",
+    "player_support": "single-player"
+  },
+  {
+    "title": "Dead by Daylight",
+    "genre": "Asymmetrical horror",
+    "player_support": "multiplayer"
+  },
+  {
+    "title": "Outlast",
+    "genre": "Survival horror",
+    "player_support": "single-player"
+  },
+  {
+    "title": "Until Dawn",
+    "genre": "Interactive horror",
+    "player_support": "single-player"
+  }
+]

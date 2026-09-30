@@ -1,0 +1,26 @@
+[
+  {
+    "show": "The Simpsons",
+    "episode_title": "Treehouse of Horror V",
+    "season": 6,
+    "episode_number": 6
+  },
+  {
+    "show": "Bob's Burgers",
+    "episode_title": "Full Bars",
+    "season": 3,
+    "episode_number": 2
+  },
+  {
+    "show": "Family Guy",
+    "episode_title": "Halloween on Spooner Street",
+    "season": 9,
+    "episode_number": 5
+  },
+  {
+    "show": "Community",
+    "episode_title": "Epidemiology",
+    "season": 3,
+    "episode_number": 5
+  }
+]
