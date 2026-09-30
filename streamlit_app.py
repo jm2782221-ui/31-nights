@@ -1,4 +1,5 @@
 from datetime import date
+import html
 import json
 import os
 from pathlib import Path
@@ -366,48 +367,191 @@ def show_filters(category):
     return {"genre": genre, "player_support": player_support}
 
 
+def _challenge_calendar_markup(today, year_completions):
+    category_labels = {"movie": "Movie", "tv": "TV Episode", "game": "Game"}
+    category_icons = {"movie": "🎬", "tv": "📺", "game": "🎮"}
+    completions_by_date = {record["date"]: record for record in year_completions}
+    weekdays = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    cells = [
+        f'<div class="october-day is-empty" role="presentation"></div>'
+        for _ in range(date(today.year, 10, 1).weekday())
+    ]
+
+    for day in range(1, CHALLENGE_NIGHTS + 1):
+        challenge_date = date(today.year, 10, day)
+        date_key = challenge_date.isoformat()
+        completion = completions_by_date.get(date_key)
+        classes = ["october-day"]
+        if completion:
+            category = completion.get("category", "")
+            label = category_labels.get(category, "Completion")
+            icon = category_icons.get(category, "🎃")
+            title = completion.get("title", "")
+            marker = icon
+            accessible_label = f"October {day}, completed: {label} — {title}"
+            classes.append("is-completed")
+            if challenge_date == today:
+                classes.append("is-today")
+                accessible_label = f"October {day}, today and completed: {label} — {title}"
+        elif challenge_date == today:
+            marker = "NOW"
+            accessible_label = f"October {day}, today, not completed"
+            classes.append("is-today")
+        elif challenge_date > today:
+            marker = "UP"
+            accessible_label = f"October {day}, upcoming"
+            classes.append("is-upcoming")
+        else:
+            marker = "—"
+            accessible_label = f"October {day}, no completion"
+            classes.append("is-past")
+
+        safe_label = html.escape(accessible_label, quote=True)
+        safe_title = html.escape(accessible_label, quote=True)
+        cells.append(
+            f'<div class="{" ".join(classes)}" role="gridcell" '
+            f'aria-label="{safe_label}" title="{safe_title}">'
+            f'<strong>{day}</strong><span>{marker}</span></div>'
+        )
+
+    weekday_cells = "".join(
+        f'<div class="october-weekday" role="columnheader">{weekday}</div>'
+        for weekday in weekdays
+    )
+    return (
+        '<div class="october-challenge-calendar" role="grid" '
+        f'aria-label="October {today.year} challenge calendar">'
+        f'{weekday_cells}{"".join(cells)}</div>'
+    )
+
+
 def show_challenge_card(today, completions, store_path):
     status = challenge_status(today)
-    year_completions = completions_for_year(completions, today.year)
+    year_completions = sorted(
+        completions_for_year(completions, today.year), key=lambda record: record["date"]
+    )
     nights = completed_nights(completions, today.year)
+    percentage = round(nights * 100 / CHALLENGE_NIGHTS)
     today_completion = completion_for_date(completions, today)
     category_labels = {"movie": "Movie", "tv": "TV Episode", "game": "Game"}
+    category_icons = {"movie": "🎬", "tv": "📺", "game": "🎮"}
+
+    st.markdown(
+        """<style>
+        .october-challenge-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: .35rem;
+            margin: .5rem 0 1rem;
+        }
+        .october-weekday {
+            color: #c6b9a5;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            padding: .2rem 0;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .october-day {
+            align-items: center;
+            aspect-ratio: 1 / 1;
+            background: rgba(255, 255, 255, .035);
+            border: 1px solid rgba(255, 255, 255, .10);
+            border-radius: .7rem;
+            color: #eee6da;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 2.7rem;
+            overflow: hidden;
+        }
+        .october-day strong { font-size: 1rem; line-height: 1.1; }
+        .october-day span { color: #c6b9a5; font-size: .68rem; line-height: 1.2; }
+        .october-day.is-empty { background: transparent; border-color: transparent; }
+        .october-day.is-completed {
+            background: linear-gradient(145deg, rgba(242, 139, 55, .24), rgba(109, 60, 37, .18));
+            border-color: rgba(255, 166, 84, .62);
+        }
+        .october-day.is-completed span { color: #ffd0a2; }
+        .october-day.is-today { box-shadow: inset 0 0 0 2px #ffd27d; border-color: #ffac59; }
+        .october-day.is-upcoming { border-style: dashed; color: #c6b9a5; }
+        .october-day.is-past { opacity: .58; }
+        @media (max-width: 520px) {
+            .october-challenge-calendar { gap: .18rem; }
+            .october-day { border-radius: .45rem; min-height: 2.15rem; }
+            .october-day strong { font-size: .86rem; }
+            .october-day span, .october-weekday { font-size: .58rem; }
+        }
+        </style>""",
+        unsafe_allow_html=True,
+    )
 
     with st.container(border=True):
-        st.markdown(f"#### October {today.year} Challenge")
-        if status == "upcoming":
-            st.caption(f"The challenge starts October 1, {today.year}.")
-        elif status == "active":
-            st.caption(f"Tonight is October {today.day} of 31.")
+        st.markdown(f"## 🎃 October {today.year} Challenge")
+        if status == "active":
+            st.markdown(f"### Tonight — October {today.day}")
+            if today_completion:
+                category = today_completion.get("category", "")
+                icon = category_icons.get(category, "🎃")
+                label = category_labels.get(category, "Completion")
+                st.success(
+                    f"Tonight is complete: {icon} {label} — {today_completion.get('title', '')}"
+                )
+            else:
+                category = st.session_state.get("category")
+                recommendation = st.session_state.get("recommendation")
+                if category in category_labels and isinstance(recommendation, dict):
+                    pick_title = (
+                        recommendation.get("title")
+                        or recommendation.get("episode_title")
+                        or recommendation.get("episode")
+                        or ""
+                    )
+                    if category == "tv":
+                        pick_title = f"{recommendation.get('show', 'TV')} — {pick_title}"
+                    icon = category_icons[category]
+                    label = category_labels[category]
+                    st.markdown(f"**Tonight’s Pick:** {icon} {label} — {pick_title}")
+                    st.caption("Use Complete Tonight below the recommendation to record the night.")
+                else:
+                    st.caption("Choose a category to see tonight’s pick and complete the night.")
+        elif status == "upcoming":
+            st.markdown(f"### Challenge opens October 1, {today.year}")
+            st.caption(f"Today is {today.strftime('%B')} {today.day}.")
         elif nights == CHALLENGE_NIGHTS:
-            st.success("All 31 challenge nights are complete.")
+            st.success(f"All {CHALLENGE_NIGHTS} October nights are complete.")
         else:
-            st.caption(f"October has ended with {nights} of 31 nights completed.")
+            st.markdown(f"### October {today.year} has ended")
+            st.caption(f"Final progress: {nights} of {CHALLENGE_NIGHTS} nights.")
 
+        st.markdown(f"### {nights} / {CHALLENGE_NIGHTS} Nights Complete")
         st.progress(nights / CHALLENGE_NIGHTS)
-        st.caption(f"{nights} of {CHALLENGE_NIGHTS} nights completed")
+        st.caption(f"{percentage}% complete")
 
-        if today_completion:
-            label = category_labels[today_completion["category"]]
-            st.success(f"Tonight is already complete: {label} · {today_completion['title']}")
-        elif status == "active":
-            st.caption("Choose a category for tonight’s pick. Rolling alone does not complete a night.")
+        st.markdown("#### October Calendar")
+        st.markdown(_challenge_calendar_markup(today, year_completions), unsafe_allow_html=True)
+        st.caption("🎬 Movie  ·  📺 TV Episode  ·  🎮 Game  ·  NOW tonight  ·  UP upcoming  ·  — no completion")
 
         if year_completions:
-            with st.expander(f"Completion list ({len(year_completions)})"):
+            with st.expander(f"Chronological history · {len(year_completions)} completions"):
                 for record in year_completions:
-                    label = category_labels[record["category"]]
-                    st.write(f"{record['date']} · {label} · {record['title']}")
+                    completed_date = date.fromisoformat(record["date"])
+                    category = record.get("category", "")
+                    icon = category_icons.get(category, "🎃")
+                    label = category_labels.get(category, "Completion")
+                    st.write(f"Oct {completed_date.day} — {icon} {label} — {record.get('title', '')}")
         else:
             st.caption("No dated completions recorded for this October.")
 
         if st.session_state.confirm_challenge_reset:
             st.warning(
-                "This clears the dated October challenge records only. The separate V1.7 watched-movie history is not part of this reset."
+                "Reset Challenge removes only the dated V1.8 challenge completion records. "
+                "It does NOT remove your separate V1.7 watched-movie history."
             )
             confirm_col, cancel_col = st.columns(2)
             with confirm_col:
-                if st.button("Confirm challenge reset", key="confirm_challenge_reset_button", type="primary"):
+                if st.button("Confirm challenge reset", key="confirm_challenge_reset_button", use_container_width=True):
                     save_challenge_completions([], store_path)
                     st.session_state.confirm_challenge_reset = False
                     st.rerun()
@@ -415,10 +559,14 @@ def show_challenge_card(today, completions, store_path):
                 if st.button("Cancel reset", key="cancel_challenge_reset"):
                     st.session_state.confirm_challenge_reset = False
                     st.rerun()
-        elif st.button("Reset October challenge", key="start_challenge_reset"):
+        elif st.button("Reset Challenge", key="start_challenge_reset"):
             st.session_state.confirm_challenge_reset = True
             st.rerun()
-        st.caption("Challenge records are stored separately from watched movie exclusions.")
+
+        st.caption(
+            "Reset Challenge clears only the dated challenge completion records. "
+            "It never removes the separate V1.7 watched-movie history."
+        )
 
 
 def show_recommendation(category, recommendation, enrichment=None):

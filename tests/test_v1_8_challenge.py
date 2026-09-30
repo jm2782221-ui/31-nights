@@ -239,7 +239,7 @@ class ChallengeAppTests(unittest.TestCase):
             save_challenge_completions(record, challenge_path)
             app.run()
 
-            self.click(app, "Reset October challenge")
+            self.click(app, "Reset Challenge")
             self.assertEqual(len(load_challenge_completions(challenge_path)), 1)
             self.assertIn("Confirm challenge reset", [button.label for button in app.button])
             self.click(app, "Confirm challenge reset")
