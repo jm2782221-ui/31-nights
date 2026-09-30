@@ -3,3 +3,5 @@ __pycache__/
 .env
 watched_movies.json
 .watched_movies.*.tmp
+challenge_completions.json
+.challenge_completions.*.tmp

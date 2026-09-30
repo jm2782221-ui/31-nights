@@ -21,3 +21,9 @@ Mark a Movie recommendation as watched to keep it out of future rolls by default
 ## Halloween TV episode sources
 
 Curated titles and numbered episode details were checked against the [Disney+ Simpsons Halloween guide](https://www.disneyplus.com/explore/articles/the-simpsons-treehouse-of-horror), [Hulu Community Halloween guide](https://www.hulu.com/guides/halloween-episodes), [Disney+ Family Guy Halloween guide](https://www.disneyplus.com/explore/articles/family-guy-halloween-episodes), and the [Bob's Burgers episode guide on TVmaze](https://www.tvmaze.com/shows/107/bobs-burgers/episodeguide), cross-checked against the [Bob's Burgers Halloween catalog](https://episodegadget.com/bob-s-burgers-halloween-episodes). The Family Guy standalone specials are kept without invented season or episode numbers and displayed by special year.
+
+## October challenge
+
+During October, the app tracks one explicit movie, TV episode, or game completion per local date. The challenge uses the current year, skips recommendations already completed during that October, and does not treat rolling or marking a movie as watched as a challenge completion.
+
+Dated completions are stored locally in the Git-ignored `challenge_completions.json` file. Resetting the challenge clears those dated records only; the separate V1.7 watched-movie exclusion list is retained. Outside October, the app remains available and reports whether the challenge is upcoming or has ended.

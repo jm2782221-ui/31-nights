@@ -6,6 +6,20 @@ import random
 import tempfile
 
 import streamlit as st
+from challenge import (
+    CHALLENGE_COMPLETIONS_PATH,
+    CHALLENGE_NIGHTS,
+    ChallengeError,
+    add_challenge_completion,
+    challenge_status,
+    completed_nights,
+    completions_for_year,
+    completion_for_date,
+    current_local_date,
+    filter_uncompleted_recommendations,
+    load_challenge_completions,
+    save_challenge_completions,
+)
 from tmdb import enrich_movie
 
 THEME_CSS = r"""
@@ -153,9 +167,9 @@ def movie_history_key(movie):
     return f"{normalized_title}::{int(movie['year'])}"
 
 
-def load_watched_movies():
+def load_watched_movies(path=WATCHED_MOVIES_PATH):
     try:
-        history = json.loads(WATCHED_MOVIES_PATH.read_text(encoding="utf-8"))
+        history = json.loads(Path(path).read_text(encoding="utf-8"))
         entries = history.get("watched", []) if isinstance(history, dict) else []
         return {
             movie_history_key(entry)
@@ -168,7 +182,7 @@ def load_watched_movies():
         return set()
 
 
-def save_watched_movies(watched_keys):
+def save_watched_movies(watched_keys, path=WATCHED_MOVIES_PATH):
     catalog = load_recommendations(CATEGORIES["movie"][1])
     movies_by_key = {movie_history_key(movie): movie for movie in catalog}
     entries = [
@@ -180,16 +194,34 @@ def save_watched_movies(watched_keys):
     temporary_path = None
     try:
         with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=WATCHED_MOVIES_PATH.parent,
+            mode="w", encoding="utf-8", dir=Path(path).parent,
             prefix=".watched_movies.", suffix=".tmp", delete=False,
         ) as temporary_file:
             temporary_file.write(payload)
             temporary_path = Path(temporary_file.name)
-        os.replace(temporary_path, WATCHED_MOVIES_PATH)
+        os.replace(temporary_path, Path(path))
     finally:
         if temporary_path is not None:
             temporary_path.unlink(missing_ok=True)
 
+
+
+def movie_roll_candidates(recommendations, watched_keys, include_watched=False):
+    if include_watched:
+        return list(recommendations)
+    return [movie for movie in recommendations if movie_history_key(movie) not in watched_keys]
+
+
+def streaming_provider_names(enrichment):
+    if not isinstance(enrichment, dict):
+        return []
+    providers = enrichment.get("watch_providers")
+    if not isinstance(providers, dict):
+        return []
+    raw_streaming = providers.get("streaming")
+    if not isinstance(raw_streaming, list):
+        return []
+    return [name.strip() for name in raw_streaming if isinstance(name, str) and name.strip()]
 
 
 @st.cache_data
@@ -266,8 +298,12 @@ def recommendations_for(category, filters, on_date=None):
     return recommendations
 
 
-def choose_recommendation(category, filters):
-    recommendations = recommendations_for(category, filters)
+def choose_recommendation(category, filters, challenge_completions=None, today=None):
+    recommendations = recommendations_for(category, filters, today)
+    if challenge_completions is not None:
+        recommendations = filter_uncompleted_recommendations(
+            recommendations, category, challenge_completions, today
+        )
     return random.choice(recommendations) if recommendations else None
 
 
@@ -330,6 +366,61 @@ def show_filters(category):
     return {"genre": genre, "player_support": player_support}
 
 
+def show_challenge_card(today, completions, store_path):
+    status = challenge_status(today)
+    year_completions = completions_for_year(completions, today.year)
+    nights = completed_nights(completions, today.year)
+    today_completion = completion_for_date(completions, today)
+    category_labels = {"movie": "Movie", "tv": "TV Episode", "game": "Game"}
+
+    with st.container(border=True):
+        st.markdown(f"#### October {today.year} Challenge")
+        if status == "upcoming":
+            st.caption(f"The challenge starts October 1, {today.year}.")
+        elif status == "active":
+            st.caption(f"Tonight is October {today.day} of 31.")
+        elif nights == CHALLENGE_NIGHTS:
+            st.success("All 31 challenge nights are complete.")
+        else:
+            st.caption(f"October has ended with {nights} of 31 nights completed.")
+
+        st.progress(nights / CHALLENGE_NIGHTS)
+        st.caption(f"{nights} of {CHALLENGE_NIGHTS} nights completed")
+
+        if today_completion:
+            label = category_labels[today_completion["category"]]
+            st.success(f"Tonight is already complete: {label} · {today_completion['title']}")
+        elif status == "active":
+            st.caption("Choose a category for tonight’s pick. Rolling alone does not complete a night.")
+
+        if year_completions:
+            with st.expander(f"Completion list ({len(year_completions)})"):
+                for record in year_completions:
+                    label = category_labels[record["category"]]
+                    st.write(f"{record['date']} · {label} · {record['title']}")
+        else:
+            st.caption("No dated completions recorded for this October.")
+
+        if st.session_state.confirm_challenge_reset:
+            st.warning(
+                "This clears the dated October challenge records only. The separate V1.7 watched-movie history is not part of this reset."
+            )
+            confirm_col, cancel_col = st.columns(2)
+            with confirm_col:
+                if st.button("Confirm challenge reset", key="confirm_challenge_reset_button", type="primary"):
+                    save_challenge_completions([], store_path)
+                    st.session_state.confirm_challenge_reset = False
+                    st.rerun()
+            with cancel_col:
+                if st.button("Cancel reset", key="cancel_challenge_reset"):
+                    st.session_state.confirm_challenge_reset = False
+                    st.rerun()
+        elif st.button("Reset October challenge", key="start_challenge_reset"):
+            st.session_state.confirm_challenge_reset = True
+            st.rerun()
+        st.caption("Challenge records are stored separately from watched movie exclusions.")
+
+
 def show_recommendation(category, recommendation, enrichment=None):
     if category == "movie":
         st.subheader(recommendation["title"])
@@ -365,24 +456,14 @@ def show_recommendation(category, recommendation, enrichment=None):
                 if metadata:
                     st.caption(" · ".join(metadata))
 
-                providers = enrichment.get("watch_providers")
-                if isinstance(providers, dict):
-                    raw_streaming = providers.get("streaming")
-                    streaming = []
-                    if isinstance(raw_streaming, list):
-                        streaming = [
-                            name.strip()
-                            for name in raw_streaming
-                            if isinstance(name, str) and name.strip()
-                        ]
-
-                    if streaming:
-                        st.caption("Available on in the U.S.")
-                        for name in streaming:
-                            st.text(f"- {name}")
-                    else:
-                        st.caption("No U.S. streaming providers are listed for this movie.")
-                    st.caption("Availability data by JustWatch via TMDB; listings can change.")
+                streaming = streaming_provider_names(enrichment)
+                if streaming:
+                    st.caption("Available on in the U.S.")
+                    for name in streaming:
+                        st.text(f"- {name}")
+                else:
+                    st.caption("No U.S. streaming providers are listed for this movie.")
+                st.caption("Availability data by JustWatch via TMDB; listings can change.")
 
         st.caption("Movie details provided by TMDB. Not endorsed or certified by TMDB.")
     elif category == "episode":
@@ -420,6 +501,31 @@ if "filters" not in st.session_state:
     st.session_state.filters = {}
 if "filter_version" not in st.session_state:
     st.session_state.filter_version = 0
+if "recommendation_date" not in st.session_state:
+    st.session_state.recommendation_date = None
+if "confirm_challenge_reset" not in st.session_state:
+    st.session_state.confirm_challenge_reset = False
+
+test_today = st.session_state.get("_challenge_test_today")
+browser_timezone = getattr(st.context, "timezone", None)
+today = current_local_date(test_today, browser_timezone)
+test_challenge_path = st.session_state.get("_challenge_test_store_path")
+challenge_store_path = (
+    Path(test_challenge_path)
+    if isinstance(test_challenge_path, str) and test_challenge_path
+    else CHALLENGE_COMPLETIONS_PATH
+)
+test_watched_path = st.session_state.get("_challenge_test_watched_path")
+watched_history_path = (
+    Path(test_watched_path)
+    if isinstance(test_watched_path, str) and test_watched_path
+    else WATCHED_MOVIES_PATH
+)
+challenge_completions = load_challenge_completions(challenge_store_path)
+if st.session_state.recommendation_date != today.isoformat():
+    st.session_state.recommendation = None
+    st.session_state.recommendation_date = today.isoformat()
+    st.session_state.marked_movie_key = None
 
 col1, col2, col3 = st.columns(3)
 for column, category in zip((col1, col2, col3), CATEGORIES):
@@ -430,7 +536,7 @@ for column, category in zip((col1, col2, col3), CATEGORIES):
             st.session_state.filters = {}
             st.session_state.filter_version += 1
 
-coming_soon = coming_soon_episodes()
+coming_soon = coming_soon_episodes(today)
 if coming_soon:
     st.subheader("Coming Soon")
     for episode in coming_soon:
@@ -440,17 +546,19 @@ if coming_soon:
         )
 
 
+show_challenge_card(today, challenge_completions, challenge_store_path)
+
 if st.session_state.category is not None:
     category = st.session_state.category
     filters = show_filters(category)
     st.session_state.filters = filters
-    all_matches = recommendations_for(category, filters)
+    all_matches = recommendations_for(category, filters, today)
     matches = all_matches
     watched_keys = set()
     include_watched = False
 
     if category == "movie":
-        watched_keys = load_watched_movies()
+        watched_keys = load_watched_movies(watched_history_path)
         include_watched = st.checkbox(
             "Include watched movies in future rolls",
             key=filter_widget_key(category, "include_watched"),
@@ -467,13 +575,23 @@ if st.session_state.category is not None:
                 for movie in watched_titles:
                     st.write(f"{movie['title']} ({movie['year']})")
                 if st.button("Clear watched history", key="clear_watched_history"):
-                    save_watched_movies(set())
+                    save_watched_movies(set(), watched_history_path)
                     st.session_state.marked_movie_key = None
                     st.rerun()
             else:
                 st.caption("No movies marked as watched yet.")
-        if not include_watched:
-            matches = [movie for movie in all_matches if movie_history_key(movie) not in watched_keys]
+        matches = movie_roll_candidates(all_matches, watched_keys, include_watched)
+
+    matches_before_challenge = matches
+    matches = filter_uncompleted_recommendations(
+        matches, category, challenge_completions, today
+    )
+    no_uncompleted_challenge_matches = (
+        challenge_status(today) == "active"
+        and completion_for_date(challenge_completions, today) is None
+        and bool(matches_before_challenge)
+        and not matches
+    )
 
     current = st.session_state.recommendation
     preserve_marked_movie = (
@@ -486,7 +604,7 @@ if st.session_state.category is not None:
 
     recommendation = st.session_state.recommendation
     all_matching_movies_watched = (
-        category == "movie" and bool(all_matches) and not matches and not include_watched
+        category == "movie" and bool(all_matches) and not matches_before_challenge and not include_watched
     )
     if all_matching_movies_watched:
         st.info(
@@ -494,7 +612,17 @@ if st.session_state.category is not None:
             "Include watched movies or clear watched history to roll again."
         )
     if recommendation is None:
-        if not all_matching_movies_watched:
+        if all_matching_movies_watched:
+            st.info(
+                "Every movie matching these filters is already marked as watched. "
+                "Include watched movies or clear watched history to roll again."
+            )
+        elif no_uncompleted_challenge_matches:
+            st.info(
+                "Every recommendation matching these filters is already completed in this October challenge. "
+                "Try another category or filter."
+            )
+        else:
             st.info("No recommendations match those filters. Try another combination.")
     else:
         enrichment = None
@@ -503,6 +631,11 @@ if st.session_state.category is not None:
                 recommendation["title"], recommendation["year"],
                 os.getenv("TMDB_READ_ACCESS_TOKEN", ""),
             )
+        st.subheader(
+            "Tonight’s Pick"
+            if challenge_status(today) == "active" and completion_for_date(challenge_completions, today) is None
+            else "Recommendation"
+        )
         with st.container(border=True):
             show_recommendation(category, recommendation, enrichment)
         if category == "movie":
@@ -511,14 +644,29 @@ if st.session_state.category is not None:
                 st.caption("Already watched · future movie rolls skip this title by default.")
             elif st.button("Mark as Watched", key=f"mark_watched_{st.session_state.filter_version}"):
                 watched_keys.add(current_key)
-                save_watched_movies(watched_keys)
+                save_watched_movies(watched_keys, watched_history_path)
                 st.session_state.marked_movie_key = current_key
+                st.rerun()
+
+    if challenge_status(today) == "active":
+        if completion_for_date(challenge_completions, today):
+            st.caption("Tonight is already complete. You can keep browsing, but a second completion cannot be added for this date.")
+        elif st.button("Complete Tonight", key=f"complete_tonight_{today.isoformat()}", type="primary"):
+            try:
+                updated_completions = add_challenge_completion(
+                    challenge_completions, category, recommendation, today
+                )
+                save_challenge_completions(updated_completions, challenge_store_path)
+            except ChallengeError as error:
+                st.error(str(error))
+            else:
                 st.rerun()
 
     roll_col, change_col = st.columns(2)
     with roll_col:
         if st.button("🎲 Roll Again", disabled=not matches, use_container_width=True):
             st.session_state.recommendation = random.choice(matches)
+            st.session_state.recommendation_date = today.isoformat()
             st.session_state.marked_movie_key = None
             st.rerun()
     with change_col:
