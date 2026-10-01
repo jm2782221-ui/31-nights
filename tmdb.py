@@ -137,9 +137,28 @@ def _watch_provider_details(payload):
     return details
 
 
+def _get_tmdb_access_token(access_token=None, streamlit_secrets=None):
+    if access_token:
+        return access_token
+    env_token = os.getenv("TMDB_READ_ACCESS_TOKEN")
+    if env_token:
+        return env_token
+    if streamlit_secrets is None:
+        try:
+            import streamlit as st
+
+            streamlit_secrets = st.secrets
+        except Exception:
+            return None
+    try:
+        return streamlit_secrets.get("TMDB_READ_ACCESS_TOKEN") or None
+    except Exception:
+        return None
+
+
 def enrich_movie(title, year, access_token=None):
     """Return validated TMDB metadata, or None when enrichment is unavailable."""
-    access_token = access_token or os.getenv("TMDB_READ_ACCESS_TOKEN")
+    access_token = _get_tmdb_access_token(access_token)
     if not access_token or not isinstance(title, str) or not title.strip():
         return None
 

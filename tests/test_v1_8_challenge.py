@@ -246,6 +246,20 @@ class ChallengeAppTests(unittest.TestCase):
             self.assertEqual(load_challenge_completions(challenge_path), [])
             self.assertEqual(watched_path.read_bytes(), before)
 
+    def test_countdown_uses_the_same_injected_local_dates(self):
+        dates = (
+            (date(2026, 9, 30), 31),
+            (date(2026, 10, 1), 30),
+            (date(2026, 10, 31), 0),
+            (date(2026, 11, 1), 364),
+        )
+        for today, expected_days in dates:
+            with self.subTest(today=today):
+                with TemporaryDirectory() as directory:
+                    app, _, _ = self.make_app(Path(directory), today)
+                    rendered = " ".join(str(item.value) for item in app.subheader)
+                    self.assertIn(f"{expected_days} days until Halloween!", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()

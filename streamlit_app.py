@@ -231,8 +231,7 @@ def load_recommendations(filename):
         return json.load(data_file)
 
 
-def days_until_halloween():
-    today = date.today()
+def days_until_halloween(today):
     halloween = date(today.year, 10, 31)
 
     if today > halloween:
@@ -569,6 +568,8 @@ def show_challenge_card(today, completions, store_path):
         )
 
 
+    st.caption("Public demo history is shared across visitors and may not persist between restarts.")
+
 def show_recommendation(category, recommendation, enrichment=None):
     if category == "movie":
         st.subheader(recommendation["title"])
@@ -637,8 +638,11 @@ def show_recommendation(category, recommendation, enrichment=None):
             f'{recommendation["player_support"].replace("_", " ").title()}'
         )
 
+test_today = st.session_state.get("_challenge_test_today")
+browser_timezone = getattr(st.context, "timezone", None)
+today = current_local_date(test_today, browser_timezone)
 st.title("31 Nights 🎃")
-st.subheader(f"{days_until_halloween()} days until Halloween!")
+st.subheader(f"{days_until_halloween(today)} days until Halloween!")
 st.write("What do you want to roll?")
 
 if "category" not in st.session_state:
@@ -654,9 +658,7 @@ if "recommendation_date" not in st.session_state:
 if "confirm_challenge_reset" not in st.session_state:
     st.session_state.confirm_challenge_reset = False
 
-test_today = st.session_state.get("_challenge_test_today")
-browser_timezone = getattr(st.context, "timezone", None)
-today = current_local_date(test_today, browser_timezone)
+
 test_challenge_path = st.session_state.get("_challenge_test_store_path")
 challenge_store_path = (
     Path(test_challenge_path)
