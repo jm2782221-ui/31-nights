@@ -4,6 +4,10 @@
 
 31 Nights is a small Python and Streamlit project for finding something fun to watch or play each night. It combines curated JSON catalogs, category filters, optional TMDB movie details, a movie watch list, and an October challenge with dated cross-category completions.
 
+## Live Demo
+
+[Open the live demo](https://31-nights-halloween.streamlit.app/)
+
 > **Public demo note:** The watch list and challenge history use local JSON files. On Streamlit Community Cloud, visitors share the app's file-backed state, and the platform does not guarantee that local file changes persist. Do not use the public demo for private or important personal history.
 
 ## Features
