@@ -12,7 +12,7 @@
 
 ## Features
 
-- **Three categories:** 90 movies, a curated Halloween TV episode catalog, and spooky games.
+- **Three categories:** 90 movies, 63 Halloween TV episodes, and 5 spooky games.
 - **Category filters:** narrow movie, TV, and game recommendations using the controls available for each catalog.
 - **Random picks:** roll again or choose something else without counting a challenge night.
 - **October challenge:** complete at most one movie, TV episode, or game per local calendar date. Track progress out of 31, view the October calendar, and browse dated completions in order.
@@ -59,7 +59,7 @@ The environment variable takes precedence when both are present. If neither is c
 
 ## Run locally
 
-Requires Python 3.12 or newer. From the repository root:
+Requires Python 3.12 or newer (also verified on 3.13). From the repository root:
 
 ```bash
 python -m venv .venv
@@ -96,6 +96,12 @@ Validate the catalog JSON files with:
 python -c "import json, pathlib; [json.loads(p.read_text(encoding='utf-8')) for p in pathlib.Path('data').glob('*.json')]; print('JSON catalogs valid')"
 ```
 
+Run all three checks before every commit. The suite makes no network calls and needs no TMDB token; `missing ScriptRunContext` lines in the output are harmless.
+
+## Developing with Claude Code
+
+[`CLAUDE.md`](CLAUDE.md) documents the architecture, data formats, conventions, known issues, and roadmap. Claude Code reads it automatically when it opens this repository. GitHub `main` is the source of truth and the branch the live demo deploys from, so changes go through a branch and pull request.
+
 ## Project layout
 
 - `streamlit_app.py` — Streamlit experience
@@ -104,6 +110,8 @@ python -c "import json, pathlib; [json.loads(p.read_text(encoding='utf-8')) for 
 - `tmdb.py` — TMDB requests and metadata validation
 - `data/` — movie, TV episode, and game catalogs
 - `tests/` — challenge, UI, and TMDB regression tests
+- `CLAUDE.md` — development guide for Claude Code
+- `watched_movies.json`, `challenge_completions.json` — local state created at runtime (ignored by Git)
 
 ## Credits
 
