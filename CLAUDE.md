@@ -19,6 +19,36 @@ Streamlit Community Cloud (https://31-nights-halloween.streamlit.app/).
 - Work on a branch and open a PR into `main`; pushing to `main` redeploys the
   public demo.
 
+## How changes ship (owner's standing workflow)
+
+The owner describes changes in conversation and does not touch code, git, or
+terminals. Claude handles everything end to end:
+
+1. Clone/refresh the repo from GitHub and branch from `main`
+   (`claude/<short-topic>`).
+2. Implement the change; add or update tests for behavior changes.
+3. Run the three pre-commit checks below and fix anything introduced.
+4. Check the UI in a local headless run (screenshots) when the change is visual.
+5. Commit and push the feature branch (backup on GitHub).
+6. Point the `preview` branch at the feature branch
+   (`git push --force origin claude/<topic>:preview`). The preview Streamlit
+   app deploys `preview` automatically; open its URL in the owner's built-in
+   browser to verify, then share the URL. `preview` is a disposable deploy
+   branch: never use it for anything else.
+7. **Stop and ask for approval before production.**
+8. On approval: open a PR into `main`, merge it, and confirm the live app
+   updated (Streamlit Cloud redeploys `main` on push). Report what changed and
+   both URLs.
+
+The preview app runs in its own container, so its watch/challenge files are
+separate from production; previews never touch production user data. If a
+step needs access Claude doesn't have (e.g. a Streamlit Cloud sign-in or a
+secret), say exactly what is blocked instead of claiming it is done.
+
+- Production: https://31-nights-halloween.streamlit.app/ (deploys `main`)
+- Preview: Streamlit Cloud app deploying the `preview` branch (URL recorded
+  here once created)
+
 ## Commands
 
 ```bash
