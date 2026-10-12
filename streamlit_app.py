@@ -25,118 +25,262 @@ from tmdb import enrich_movie
 
 THEME_CSS = r"""
 <style>
-:root { color-scheme: dark; }
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+:root {
+    color-scheme: dark;
+    --crypt: #170c14;
+    --velvet: #2a1322;
+    --velvet-deep: #1f0e1a;
+    --gilt: #c8a35a;
+    --gilt-bright: #e6c983;
+    --gilt-faint: rgba(200, 163, 90, 0.28);
+    --candle: #f1e4c6;
+    --ash: #a6968a;
+    --blood: #7a1e22;
+    --display: "Cinzel", "Trajan Pro", Georgia, serif;
+    --body: "EB Garamond", Garamond, Georgia, serif;
+}
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    background-color: var(--crypt);
+}
 [data-testid="stAppViewContainer"] {
-    color: #f2e8d8;
+    color: var(--candle);
     background:
-        radial-gradient(ellipse at 52% -12%, rgba(157, 79, 38, 0.20), transparent 44%),
-        linear-gradient(180deg, #171411 0%, #100f0e 58%, #0d0d0c 100%);
+        radial-gradient(ellipse 70% 40% at 50% 0%, rgba(122, 30, 34, 0.30), transparent 70%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(42, 19, 34, 0.9), transparent 80%),
+        var(--crypt);
 }
 [data-testid="stHeader"] { background: transparent; }
-[data-testid="stToolbar"] { right: 1rem; }
 .block-container {
-    max-width: 920px;
-    padding: 3rem 2.3rem 3.5rem;
+    max-width: 860px;
+    padding: 3.5rem 2rem 4rem;
 }
-h1, h2, h3 {
-    color: #f3e8d5;
-    letter-spacing: -0.025em;
+html, body, [data-testid="stMarkdownContainer"], [data-testid="stCaptionContainer"],
+[data-testid="stWidgetLabel"], button, input, [role="combobox"], [role="option"],
+[data-testid="stExpander"] summary {
+    font-family: var(--body) !important;
 }
+[data-testid="stMarkdownContainer"] p, [data-testid="stText"] {
+    color: #e2d4b8;
+    font-size: 1.12rem;
+    line-height: 1.6;
+}
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p {
+    color: var(--ash);
+    font-size: 1rem;
+}
+h1, h2, h3, h4 {
+    font-family: var(--display) !important;
+    color: var(--candle);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.2rem; }
+h4 { font-size: 1rem; color: var(--gilt); }
+
+/* Title plaque */
 h1 {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(2.8rem, 6vw, 4.35rem);
-    line-height: 1.06;
-    margin: 0 0 0.45rem;
+    font-size: clamp(2.9rem, 8vw, 4.6rem) !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    text-align: center;
+    letter-spacing: 0.08em;
+    color: var(--candle);
+    text-shadow: 0 0 28px rgba(200, 163, 90, 0.18);
+    padding-bottom: 0.2rem !important;
 }
-main h1::after {
-    content: "";
-    display: block;
-    width: 3.4rem;
-    height: 3px;
-    margin-top: 1.05rem;
-    border-radius: 99px;
-    background: linear-gradient(90deg, #d47a3e, rgba(212, 122, 62, 0.18));
+h1 a, h2 a, h3 a { display: none !important; }
+.st-key-hero { text-align: center; gap: 0.3rem; margin-bottom: 0.6rem; }
+.st-key-hero h3 {
+    font-family: var(--body) !important;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
+    color: var(--gilt);
+    text-align: center;
 }
-h2, h3 { font-family: Georgia, "Times New Roman", serif; }
-[data-testid="stMarkdownContainer"] p {
-    color: #d8cbb8;
-    line-height: 1.65;
+.st-key-hero [data-testid="stMarkdownContainer"] p { text-align: center; color: var(--ash); }
+.gilt-rule {
+    display: flex; align-items: center; gap: 0.9rem;
+    margin: 1rem auto 0.4rem; max-width: 22rem; color: var(--gilt);
 }
-[data-testid="stCaptionContainer"] { color: #bbae9b; }
-[data-testid="stButton"] > button {
-    min-height: 2.9rem;
-    padding: 0.55rem 1rem;
-    border: 1px solid rgba(211, 156, 105, 0.28);
-    border-radius: 12px;
-    background: rgba(44, 37, 31, 0.82);
-    color: #f4ead9;
-    font-weight: 650;
-    transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+.gilt-rule::before, .gilt-rule::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gilt));
 }
-[data-testid="stButton"] > button:hover {
-    border-color: rgba(235, 155, 91, 0.72);
-    background: rgba(91, 53, 32, 0.78);
-    transform: translateY(-1px);
+.gilt-rule::after { background: linear-gradient(90deg, var(--gilt), transparent); }
+.gilt-rule span { font-size: 0.8rem; line-height: 1; }
+
+/* Buttons */
+[data-testid="stButton"] button, [data-testid="stBaseButton-secondary"], [data-testid="stBaseButton-primary"] {
+    min-height: 3rem;
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--gilt-faint);
+    border-radius: 2px;
+    background: rgba(42, 19, 34, 0.55);
+    color: var(--candle);
+    font-size: 1.08rem;
+    letter-spacing: 0.02em;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
-[data-testid="stButton"] > button[kind="primary"] {
-    border-color: #c8753d;
-    background: #a9562f;
-    color: #fff4e4;
+[data-testid="stButton"] button:hover {
+    border-color: var(--gilt);
+    background: rgba(58, 24, 44, 0.85);
+    color: var(--gilt-bright);
 }
-[data-testid="stButton"] > button[kind="primary"]:hover { background: #bd6837; }
-[data-testid="stButton"] > button:focus-visible,
-[role="combobox"]:focus-visible,
-[data-testid="stSelectbox"] [data-baseweb="select"]:focus-within {
-    outline: 3px solid #e79a5e;
+[data-testid="stButton"] button[kind="primary"], [data-testid="stBaseButton-primary"] {
+    border-color: var(--gilt);
+    background: linear-gradient(180deg, #d9b86f, #b08843);
+    font-weight: 600;
+}
+[data-testid="stBaseButton-primary"] p, [data-testid="stBaseButton-primary"]:hover p {
+    color: #1d0f17 !important;
+    font-weight: 600;
+    font-size: 1.12rem;
+    letter-spacing: 0.03em;
+}
+[data-testid="stButton"] button[kind="primary"]:hover {
+    background: linear-gradient(180deg, #e6c983, #c39c52);
+}
+[data-testid="stButton"] button:disabled {
+    border-color: rgba(166, 150, 138, 0.18);
+    background: transparent;
+    color: #6f6259;
+}
+[data-testid="stButton"] button:focus-visible,
+[data-testid="stCheckbox"] label:focus-within,
+[data-baseweb="select"]:focus-within {
+    outline: 2px solid var(--gilt-bright) !important;
     outline-offset: 3px;
 }
-[data-testid="stButton"] > button:disabled {
-    border-color: rgba(189, 174, 151, 0.16);
-    background: rgba(39, 36, 32, 0.7);
-    color: #948a7c;
-    transform: none;
+.st-key-category_row [data-testid="stButton"] button {
+    min-height: 3.6rem;
 }
-[role="combobox"] {
+.st-key-category_row [data-testid="stButton"] button p {
+    font-family: var(--display) !important;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    white-space: normal;
+    line-height: 1.25;
+}
+
+/* Selects and checkbox (Streamlit 1.64 uses react-aria markup) */
+[data-testid="stSelectbox"] [role="group"] {
     min-height: 2.9rem;
-    border: 1px solid rgba(211, 156, 105, 0.3);
-    border-radius: 12px !important;
-    background: #211e1a !important;
-    color: #f4ead9 !important;
-    box-shadow: none !important;
+    border: 1px solid var(--gilt-faint) !important;
+    border-radius: 2px !important;
+    background: var(--velvet-deep) !important;
 }
-[role="combobox"]:hover { border-color: rgba(235, 155, 91, 0.72); }
-[role="listbox"] {
-    border: 1px solid rgba(211, 156, 105, 0.3);
-    border-radius: 12px;
-    background: #211e1a;
+[data-testid="stSelectbox"] [role="group"]:hover { border-color: var(--gilt) !important; }
+[data-testid="stSelectbox"] [role="group"]:focus-within {
+    outline: 2px solid var(--gilt-bright);
+    outline-offset: 3px;
 }
-[role="option"] { color: #f2e8d8; }
-[role="option"][aria-selected="true"] { background: #493023; }
-[data-testid="stSelectbox"] [data-baseweb="select"] > div {
-    min-height: 2.9rem;
-    border-color: rgba(211, 156, 105, 0.3);
-    border-radius: 12px;
-    background: #211e1a;
-    color: #f4ead9;
+[data-testid="stSelectbox"] input {
+    background: transparent !important;
+    color: var(--candle) !important;
+    font-family: var(--body) !important;
+    font-size: 1.05rem !important;
 }
-[data-baseweb="popover"] [role="listbox"] {
-    border: 1px solid rgba(211, 156, 105, 0.3);
-    background: #211e1a;
+[data-testid="stSelectbox"] button { background: transparent !important; color: var(--gilt) !important; }
+[data-testid="stCheckbox"] label > div:first-of-type {
+    border: 1px solid var(--gilt) !important;
+    border-radius: 1px !important;
+    background-color: var(--velvet-deep) !important;
 }
-[data-baseweb="popover"] [role="option"] { color: #f2e8d8; }
-[data-baseweb="popover"] [role="option"]:hover { background: #493023; }
-[data-testid="stVerticalBlockBorderWrapper"] {
-    border: 1px solid rgba(214, 133, 70, 0.32) !important;
-    border-radius: 20px !important;
-    background: linear-gradient(145deg, rgba(39, 33, 28, 0.96), rgba(26, 24, 22, 0.96));
-    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.24), 0 0 32px rgba(163, 80, 37, 0.08);
-    padding: 1.3rem 1.45rem;
+[data-testid="stCheckbox"] input:checked + div, [data-testid="stCheckbox"] label[data-selected] > div:first-of-type {
+    background-color: var(--gilt) !important;
 }
-hr { border-color: rgba(213, 175, 133, 0.18); }
+[data-testid="stCheckbox"] p { color: var(--ash) !important; }
+[data-baseweb="popover"] [role="listbox"], [data-baseweb="popover"] ul {
+    border: 1px solid var(--gilt-faint);
+    background: var(--velvet-deep) !important;
+}
+[data-baseweb="popover"] [role="option"] { color: var(--candle); }
+[data-baseweb="popover"] [role="option"]:hover,
+[data-baseweb="popover"] [role="option"][aria-selected="true"] { background: var(--velvet) !important; }
+[data-testid="stWidgetLabel"] p { color: var(--ash); font-size: 1rem; }
+
+/* Expanders */
+[data-testid="stExpander"] details {
+    border: 1px solid var(--gilt-faint);
+    border-radius: 2px;
+    background: rgba(31, 14, 26, 0.6);
+}
+[data-testid="stExpander"] summary:hover { color: var(--gilt-bright); }
+
+/* The pick: a gilt-framed card, the one ornate element on the page */
+.st-key-pick_card {
+    position: relative;
+    padding: 2.4rem 2.2rem 2rem !important;
+    border: 1px solid var(--gilt) !important;
+    border-radius: 2px !important;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200, 163, 90, 0.10), transparent 70%),
+        linear-gradient(180deg, #2e1526, #1d0d18);
+    box-shadow: inset 0 0 0 6px var(--crypt), inset 0 0 0 7px var(--gilt-faint),
+                0 30px 70px rgba(0, 0, 0, 0.55);
+    text-align: center;
+}
+.st-key-pick_card::before, .st-key-pick_card::after {
+    content: "✦";
+    position: absolute; left: 50%; transform: translateX(-50%);
+    color: var(--gilt); font-size: 0.85rem; line-height: 1;
+    background: var(--crypt); padding: 0 0.5rem;
+}
+.st-key-pick_card::before { top: -0.45rem; }
+.st-key-pick_card::after { bottom: -0.45rem; }
+.st-key-pick_card h3 {
+    font-size: clamp(1.7rem, 4.5vw, 2.4rem) !important;
+    line-height: 1.15;
+    text-align: center;
+    color: var(--candle);
+}
+.st-key-pick_card [data-testid="stCaptionContainer"] p { text-align: center; color: var(--gilt); }
+.st-key-pick_card [data-testid="stMarkdownContainer"] p { text-align: left; }
+.st-key-pick_card [data-testid="stImage"] img {
+    border: 1px solid var(--gilt-faint);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+.pick-eyebrow {
+    font-family: var(--body); font-style: italic; color: var(--ash);
+    font-size: 1.05rem; text-align: center; margin: 0;
+}
+
+/* Challenge ledger */
+.st-key-challenge_card {
+    padding: 1.8rem 1.8rem 1.4rem !important;
+    border: 1px solid var(--gilt-faint) !important;
+    border-radius: 2px !important;
+    background: rgba(31, 14, 26, 0.72);
+}
+[data-testid="stProgressBarTrack"] {
+    background: rgba(166, 150, 138, 0.16) !important;
+    border-radius: 0 !important;
+    height: 4px !important;
+}
+[data-testid="stProgressBarTrack"] > div {
+    background: linear-gradient(90deg, #8c6a2f, var(--gilt-bright)) !important;
+    border-radius: 0 !important;
+}
+[data-testid="stAlert"] {
+    border: 1px solid var(--gilt-faint);
+    border-radius: 2px;
+    background: rgba(42, 19, 34, 0.7) !important;
+    color: var(--candle);
+}
+hr { border-color: var(--gilt-faint); }
+.st-key-site_footer [data-testid="stCaptionContainer"] p { text-align: center; font-size: 0.92rem; }
+
 @media (max-width: 640px) {
-    .block-container { padding: 2rem 1.1rem 2.6rem; }
-    h1 { font-size: 2.75rem; }
-    [data-testid="stVerticalBlockBorderWrapper"] { padding: 1rem; }
+    .block-container { padding: 2.2rem 1rem 3rem; }
+    .st-key-pick_card { padding: 2rem 1.2rem 1.6rem !important; }
+    .st-key-challenge_card { padding: 1.3rem 1rem !important; }
+    .st-key-challenge_card h2 { font-size: 1.2rem; }
+    .st-key-challenge_card h3, .st-key-challenge_card h4 { font-size: 0.98rem; }
+    .st-key-category_row [data-testid="stButton"] button { min-height: 3rem; }
 }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -317,11 +461,12 @@ def filter_widget_key(category, name):
 
 
 def show_filters(category):
+    left, right = st.columns(2)
     if category == "movie":
         genre_options = sorted(
             {item["genre"] for item in load_recommendations(CATEGORIES[category][1])}
         )
-        genre = st.selectbox(
+        genre = left.selectbox(
             "Genre",
             [ANY_FILTER, *genre_options],
             key=filter_widget_key(category, "genre"),
@@ -332,7 +477,7 @@ def show_filters(category):
                 for item in load_recommendations(CATEGORIES[category][1])
             }
         )
-        scare_level = st.selectbox(
+        scare_level = right.selectbox(
             "Scare level",
             [ANY_FILTER, *scare_levels],
             key=filter_widget_key(category, "scare_level"),
@@ -344,7 +489,7 @@ def show_filters(category):
             {item["show"] for item in load_recommendations(CATEGORIES[category][1])}
         )
         return {
-            "show": st.selectbox(
+            "show": left.selectbox(
                 "Show",
                 [ANY_FILTER, *shows],
                 key=filter_widget_key(category, "show"),
@@ -353,12 +498,12 @@ def show_filters(category):
 
     games = load_recommendations(CATEGORIES[category][1])
     genres = sorted({item["genre"] for item in games})
-    genre = st.selectbox(
+    genre = left.selectbox(
         "Genre",
         [ANY_FILTER, *genres],
         key=filter_widget_key(category, "genre"),
     )
-    player_support = st.selectbox(
+    player_support = right.selectbox(
         "Player support",
         [ANY_FILTER, "Single-player", "Multiplayer", "Both"],
         key=filter_widget_key(category, "player_support"),
@@ -393,15 +538,15 @@ def _challenge_calendar_markup(today, year_completions):
                 classes.append("is-today")
                 accessible_label = f"October {day}, today and completed: {label} — {title}"
         elif challenge_date == today:
-            marker = "NOW"
+            marker = "tonight"
             accessible_label = f"October {day}, today, not completed"
             classes.append("is-today")
         elif challenge_date > today:
-            marker = "UP"
+            marker = "·"
             accessible_label = f"October {day}, upcoming"
             classes.append("is-upcoming")
         else:
-            marker = "—"
+            marker = ""
             accessible_label = f"October {day}, no completion"
             classes.append("is-past")
 
@@ -440,56 +585,63 @@ def show_challenge_card(today, completions, store_path):
         .october-challenge-calendar {
             display: grid;
             grid-template-columns: repeat(7, minmax(0, 1fr));
-            gap: .35rem;
-            margin: .5rem 0 1rem;
+            gap: 4px;
+            margin: .6rem 0 1rem;
         }
         .october-weekday {
-            color: #c6b9a5;
-            font-size: .72rem;
-            font-weight: 700;
-            letter-spacing: .06em;
-            padding: .2rem 0;
+            color: var(--ash);
+            font-family: var(--body);
+            font-style: italic;
+            font-size: .95rem;
+            padding: .2rem 0 .35rem;
             text-align: center;
-            text-transform: uppercase;
         }
         .october-day {
             align-items: center;
             aspect-ratio: 1 / 1;
-            background: rgba(255, 255, 255, .035);
-            border: 1px solid rgba(255, 255, 255, .10);
-            border-radius: .7rem;
-            color: #eee6da;
+            background: rgba(23, 12, 20, .7);
+            border: 1px solid rgba(200, 163, 90, .14);
+            border-radius: 1px;
+            color: var(--candle);
             display: flex;
             flex-direction: column;
+            gap: .15rem;
             justify-content: center;
-            min-height: 2.7rem;
+            min-height: 2.6rem;
             overflow: hidden;
         }
-        .october-day strong { font-size: 1rem; line-height: 1.1; }
-        .october-day span { color: #c6b9a5; font-size: .68rem; line-height: 1.2; }
+        .october-day strong {
+            font-family: var(--display);
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+        .october-day span { color: var(--ash); font-size: .78rem; line-height: 1; }
         .october-day.is-empty { background: transparent; border-color: transparent; }
         .october-day.is-completed {
-            background: linear-gradient(145deg, rgba(242, 139, 55, .24), rgba(109, 60, 37, .18));
-            border-color: rgba(255, 166, 84, .62);
+            background: radial-gradient(circle at 50% 40%, rgba(122, 30, 34, .85), rgba(74, 16, 22, .9));
+            border-color: rgba(200, 163, 90, .55);
         }
-        .october-day.is-completed span { color: #ffd0a2; }
-        .october-day.is-today { box-shadow: inset 0 0 0 2px #ffd27d; border-color: #ffac59; }
-        .october-day.is-upcoming { border-style: dashed; color: #c6b9a5; }
-        .october-day.is-past { opacity: .58; }
+        .october-day.is-completed strong { color: var(--gilt-bright); }
+        .october-day.is-today { border-color: var(--gilt-bright); box-shadow: inset 0 0 0 1px var(--gilt-bright), 0 0 18px rgba(230, 201, 131, .25); }
+        .october-day.is-today span { color: var(--gilt-bright); }
+        .october-day.is-upcoming { color: rgba(241, 228, 198, .62); }
+        .october-day.is-past { opacity: .5; }
         @media (max-width: 520px) {
-            .october-challenge-calendar { gap: .18rem; }
-            .october-day { border-radius: .45rem; min-height: 2.15rem; }
-            .october-day strong { font-size: .86rem; }
-            .october-day span, .october-weekday { font-size: .58rem; }
+            .october-challenge-calendar { gap: 3px; }
+            .october-day { min-height: 2.2rem; }
+            .october-day strong { font-size: .88rem; }
+            .october-day span { font-size: .62rem; }
+            .october-weekday { font-size: .78rem; }
         }
         </style>""",
         unsafe_allow_html=True,
     )
 
-    with st.container(border=True):
-        st.markdown(f"## 🎃 October {today.year} Challenge")
+    with st.container(border=True, key="challenge_card"):
+        st.markdown(f"## The {today.year} October challenge")
         if status == "active":
-            st.markdown(f"### Tonight — October {today.day}")
+            st.markdown(f"### Night {today.day} of {CHALLENGE_NIGHTS}")
             if today_completion:
                 category = today_completion.get("category", "")
                 icon = category_icons.get(category, "🎃")
@@ -511,10 +663,9 @@ def show_challenge_card(today, completions, store_path):
                         pick_title = f"{recommendation.get('show', 'TV')} — {pick_title}"
                     icon = category_icons[category]
                     label = category_labels[category]
-                    st.markdown(f"**Tonight’s Pick:** {icon} {label} — {pick_title}")
-                    st.caption("Use Complete Tonight below the recommendation to record the night.")
+                    st.markdown(f"Tonight’s pick is {icon} {pick_title}. Use Complete Tonight when you’ve finished it.")
                 else:
-                    st.caption("Choose a category to see tonight’s pick and complete the night.")
+                    st.caption("Choose a movie, episode, or game above to get tonight’s pick.")
         elif status == "upcoming":
             st.markdown(f"### Challenge opens October 1, {today.year}")
             st.caption(f"Today is {today.strftime('%B')} {today.day}.")
@@ -524,16 +675,15 @@ def show_challenge_card(today, completions, store_path):
             st.markdown(f"### October {today.year} has ended")
             st.caption(f"Final progress: {nights} of {CHALLENGE_NIGHTS} nights.")
 
-        st.markdown(f"### {nights} / {CHALLENGE_NIGHTS} Nights Complete")
+        st.markdown(f"#### {nights} of {CHALLENGE_NIGHTS} nights complete")
         st.progress(nights / CHALLENGE_NIGHTS)
-        st.caption(f"{percentage}% complete")
+        st.caption(f"{percentage}% of October")
 
-        st.markdown("#### October Calendar")
         st.markdown(_challenge_calendar_markup(today, year_completions), unsafe_allow_html=True)
-        st.caption("🎬 Movie  ·  📺 TV Episode  ·  🎮 Game  ·  NOW tonight  ·  UP upcoming  ·  — no completion")
+        st.caption("Completed nights glow red and show what you chose: 🎬 movie, 📺 episode, 🎮 game.")
 
         if year_completions:
-            with st.expander(f"Chronological history · {len(year_completions)} completions"):
+            with st.expander(f"Every night so far ({len(year_completions)})"):
                 for record in year_completions:
                     completed_date = date.fromisoformat(record["date"])
                     category = record.get("category", "")
@@ -545,8 +695,8 @@ def show_challenge_card(today, completions, store_path):
 
         if st.session_state.confirm_challenge_reset:
             st.warning(
-                "Reset Challenge removes only the dated V1.8 challenge completion records. "
-                "It does NOT remove your separate V1.7 watched-movie history."
+                "This erases every completed night for the challenge. "
+                "Your watched-movie list stays as it is."
             )
             confirm_col, cancel_col = st.columns(2)
             with confirm_col:
@@ -562,13 +712,6 @@ def show_challenge_card(today, completions, store_path):
             st.session_state.confirm_challenge_reset = True
             st.rerun()
 
-        st.caption(
-            "Reset Challenge clears only the dated challenge completion records. "
-            "It never removes the separate V1.7 watched-movie history."
-        )
-
-
-    st.caption("Public demo history is shared across visitors and may not persist between restarts.")
 
 def show_recommendation(category, recommendation, enrichment=None):
     if category == "movie":
@@ -641,9 +784,11 @@ def show_recommendation(category, recommendation, enrichment=None):
 test_today = st.session_state.get("_challenge_test_today")
 browser_timezone = getattr(st.context, "timezone", None)
 today = current_local_date(test_today, browser_timezone)
-st.title("31 Nights 🎃")
-st.subheader(f"{days_until_halloween(today)} days until Halloween!")
-st.write("What do you want to roll?")
+with st.container(key="hero"):
+    st.title("31 Nights")
+    st.markdown('<div class="gilt-rule" aria-hidden="true"><span>✦</span></div>', unsafe_allow_html=True)
+    st.subheader(f"{days_until_halloween(today)} days until Halloween!")
+    st.write("What do you want to roll?")
 
 if "category" not in st.session_state:
     st.session_state.category = None
@@ -677,30 +822,28 @@ if st.session_state.recommendation_date != today.isoformat():
     st.session_state.recommendation_date = today.isoformat()
     st.session_state.marked_movie_key = None
 
-col1, col2, col3 = st.columns(3)
-for column, category in zip((col1, col2, col3), CATEGORIES):
-    with column:
-        if st.button(CATEGORIES[category][0], use_container_width=True):
-            st.session_state.category = category
-            st.session_state.recommendation = None
-            st.session_state.filters = {}
-            st.session_state.filter_version += 1
-
-coming_soon = coming_soon_episodes(today)
-if coming_soon:
-    st.subheader("Coming Soon")
-    for episode in coming_soon:
-        st.write(
-            f"{episode['show']}: {episode['episode_title']} · "
-            f"Available {episode.get('available_date', 'Date not set')}"
-        )
-
-
-show_challenge_card(today, challenge_completions, challenge_store_path)
+with st.container(key="category_row"):
+    col1, col2, col3 = st.columns(3)
+    for column, category in zip((col1, col2, col3), CATEGORIES):
+        with column:
+            if st.button(CATEGORIES[category][0], use_container_width=True):
+                st.session_state.category = category
+                st.session_state.recommendation = None
+                st.session_state.filters = {}
+                st.session_state.filter_version += 1
 
 if st.session_state.category is not None:
     category = st.session_state.category
-    filters = show_filters(category)
+    # Layout slots, in reading order. The watched-movie controls sit at the
+    # bottom but are filled first, because they decide which picks are eligible.
+    filters_area = st.container()
+    notices_area = st.container()
+    pick_area = st.container()
+    actions_area = st.container()
+    watched_area = st.container()
+
+    with filters_area:
+        filters = show_filters(category)
     st.session_state.filters = filters
     all_matches = recommendations_for(category, filters, today)
     matches = all_matches
@@ -708,28 +851,29 @@ if st.session_state.category is not None:
     include_watched = False
 
     if category == "movie":
-        watched_keys = load_watched_movies(watched_history_path)
-        include_watched = st.checkbox(
-            "Include watched movies in future rolls",
-            key=filter_widget_key(category, "include_watched"),
-        )
-        with st.expander(f"Watched movies ({len(watched_keys)})"):
-            watched_titles = sorted(
-                (
-                    movie for movie in load_recommendations(CATEGORIES["movie"][1])
-                    if movie_history_key(movie) in watched_keys
-                ),
-                key=lambda movie: (movie["title"].casefold(), movie["year"]),
+        with watched_area:
+            watched_keys = load_watched_movies(watched_history_path)
+            include_watched = st.checkbox(
+                "Include watched movies in future rolls",
+                key=filter_widget_key(category, "include_watched"),
             )
-            if watched_titles:
-                for movie in watched_titles:
-                    st.write(f"{movie['title']} ({movie['year']})")
-                if st.button("Clear watched history", key="clear_watched_history"):
-                    save_watched_movies(set(), watched_history_path)
-                    st.session_state.marked_movie_key = None
-                    st.rerun()
-            else:
-                st.caption("No movies marked as watched yet.")
+            with st.expander(f"Watched movies ({len(watched_keys)})"):
+                watched_titles = sorted(
+                    (
+                        movie for movie in load_recommendations(CATEGORIES["movie"][1])
+                        if movie_history_key(movie) in watched_keys
+                    ),
+                    key=lambda movie: (movie["title"].casefold(), movie["year"]),
+                )
+                if watched_titles:
+                    for movie in watched_titles:
+                        st.write(f"{movie['title']} ({movie['year']})")
+                    if st.button("Clear watched history", key="clear_watched_history"):
+                        save_watched_movies(set(), watched_history_path)
+                        st.session_state.marked_movie_key = None
+                        st.rerun()
+                else:
+                    st.caption("No movies marked as watched yet.")
         matches = movie_roll_candidates(all_matches, watched_keys, include_watched)
 
     matches_before_challenge = matches
@@ -756,73 +900,104 @@ if st.session_state.category is not None:
     all_matching_movies_watched = (
         category == "movie" and bool(all_matches) and not matches_before_challenge and not include_watched
     )
-    if all_matching_movies_watched:
-        st.info(
-            "Every movie matching these filters is already marked as watched. "
-            "Include watched movies or clear watched history to roll again."
-        )
-    if recommendation is None:
+    with notices_area:
         if all_matching_movies_watched:
             st.info(
                 "Every movie matching these filters is already marked as watched. "
                 "Include watched movies or clear watched history to roll again."
             )
-        elif no_uncompleted_challenge_matches:
-            st.info(
-                "Every recommendation matching these filters is already completed in this October challenge. "
-                "Try another category or filter."
-            )
-        else:
-            st.info("No recommendations match those filters. Try another combination.")
-    else:
+        if recommendation is None:
+            if all_matching_movies_watched:
+                st.info(
+                    "Every movie matching these filters is already marked as watched. "
+                    "Include watched movies or clear watched history to roll again."
+                )
+            elif no_uncompleted_challenge_matches:
+                st.info(
+                    "Every recommendation matching these filters is already completed in this October challenge. "
+                    "Try another category or filter."
+                )
+            else:
+                st.info("No recommendations match those filters. Try another combination.")
+
+    if recommendation is not None:
         enrichment = None
         if category == "movie":
             enrichment = cached_movie_enrichment(
                 recommendation["title"], recommendation["year"],
                 os.getenv("TMDB_READ_ACCESS_TOKEN", ""),
             )
-        st.subheader(
-            "Tonight’s Pick"
+        pick_label = (
+            "Tonight’s pick"
             if challenge_status(today) == "active" and completion_for_date(challenge_completions, today) is None
-            else "Recommendation"
+            else "Your recommendation"
         )
-        with st.container(border=True):
-            show_recommendation(category, recommendation, enrichment)
-        if category == "movie":
+        with pick_area:
+            with st.container(border=True, key="pick_card"):
+                st.markdown(f'<p class="pick-eyebrow">{pick_label}</p>', unsafe_allow_html=True)
+                show_recommendation(category, recommendation, enrichment)
+
+    with actions_area:
+        if challenge_status(today) == "active":
+            if completion_for_date(challenge_completions, today):
+                st.caption("Tonight is already complete. You can keep browsing, but a second completion cannot be added for this date.")
+            elif st.button("Complete Tonight", key=f"complete_tonight_{today.isoformat()}", type="primary", use_container_width=True):
+                try:
+                    updated_completions = add_challenge_completion(
+                        challenge_completions, category, recommendation, today
+                    )
+                    save_challenge_completions(updated_completions, challenge_store_path)
+                except ChallengeError as error:
+                    st.error(str(error))
+                else:
+                    st.rerun()
+
+        if category == "movie" and recommendation is not None:
             current_key = movie_history_key(recommendation)
             if current_key in watched_keys:
-                st.caption("Already watched · future movie rolls skip this title by default.")
-            elif st.button("Mark as Watched", key=f"mark_watched_{st.session_state.filter_version}"):
-                watched_keys.add(current_key)
-                save_watched_movies(watched_keys, watched_history_path)
-                st.session_state.marked_movie_key = current_key
+                st.caption("You’ve seen this one. Future movie rolls skip it unless you include watched movies.")
+
+        if category == "movie" and recommendation is not None and movie_history_key(recommendation) not in watched_keys:
+            roll_col, watched_col, change_col = st.columns(3)
+        else:
+            roll_col, change_col = st.columns(2)
+            watched_col = None
+        with roll_col:
+            if st.button("🎲 Roll Again", disabled=not matches, use_container_width=True):
+                st.session_state.recommendation = random.choice(matches)
+                st.session_state.recommendation_date = today.isoformat()
+                st.session_state.marked_movie_key = None
+                st.rerun()
+        if watched_col is not None:
+            with watched_col:
+                if st.button("Mark as Watched", key=f"mark_watched_{st.session_state.filter_version}", use_container_width=True):
+                    watched_keys.add(movie_history_key(recommendation))
+                    save_watched_movies(watched_keys, watched_history_path)
+                    st.session_state.marked_movie_key = movie_history_key(recommendation)
+                    st.rerun()
+        with change_col:
+            if st.button("🔄 Choose Something Else", use_container_width=True):
+                st.session_state.category = None
+                st.session_state.recommendation = None
+                st.session_state.filters = {}
+                st.session_state.filter_version += 1
+                st.session_state.marked_movie_key = None
                 st.rerun()
 
-    if challenge_status(today) == "active":
-        if completion_for_date(challenge_completions, today):
-            st.caption("Tonight is already complete. You can keep browsing, but a second completion cannot be added for this date.")
-        elif st.button("Complete Tonight", key=f"complete_tonight_{today.isoformat()}", type="primary"):
-            try:
-                updated_completions = add_challenge_completion(
-                    challenge_completions, category, recommendation, today
-                )
-                save_challenge_completions(updated_completions, challenge_store_path)
-            except ChallengeError as error:
-                st.error(str(error))
-            else:
-                st.rerun()
+st.markdown('<div class="gilt-rule" aria-hidden="true"><span>✦</span></div>', unsafe_allow_html=True)
+show_challenge_card(today, challenge_completions, challenge_store_path)
 
-    roll_col, change_col = st.columns(2)
-    with roll_col:
-        if st.button("🎲 Roll Again", disabled=not matches, use_container_width=True):
-            st.session_state.recommendation = random.choice(matches)
-            st.session_state.recommendation_date = today.isoformat()
-            st.session_state.marked_movie_key = None
-            st.rerun()
-    with change_col:
-        if st.button("🔄 Choose Something Else", use_container_width=True):
-            st.session_state.category = None
-            st.session_state.recommendation = None
-            st.session_state.filters = {}
-            st.session_state.filter_version += 1
-            st.session_state.marked_movie_key = None
+coming_soon = coming_soon_episodes(today)
+if coming_soon:
+    st.markdown("#### Coming soon")
+    for episode in coming_soon:
+        st.write(
+            f"{episode['show']}: {episode['episode_title']} · "
+            f"Available {episode.get('available_date', 'Date not set')}"
+        )
+
+with st.container(key="site_footer"):
+    st.caption(
+        "On the public demo, watch and challenge history is shared by every visitor "
+        "and may reset when the app restarts."
+    )
